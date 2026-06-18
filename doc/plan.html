@@ -503,6 +503,22 @@
       <span class="nav-dot" style="background:#38bdf8"></span> 구현 계획
     </a>
   </div>
+
+  <div class="nav-section">
+    <div class="nav-label">기술 학습</div>
+    <a class="nav-item" onclick="show('learn-arch')">
+      <span class="nav-dot" style="background:#f472b6"></span> 아키텍처 개념
+    </a>
+    <a class="nav-item" onclick="show('learn-redis')">
+      <span class="nav-dot" style="background:#fb923c"></span> Redis 개념
+    </a>
+    <a class="nav-item" onclick="show('learn-mq')">
+      <span class="nav-dot" style="background:#facc15"></span> RabbitMQ 개념
+    </a>
+    <a class="nav-item" onclick="show('learn-spring')">
+      <span class="nav-dot" style="background:#34d399"></span> Spring 기술
+    </a>
+  </div>
 </nav>
 
 <!-- ═══════════════════ MAIN ═══════════════════ -->
@@ -1287,15 +1303,15 @@ seats
       </div>
       <div class="phase-body" id="body-2">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">헥사고날 패키지 구조 셋업 (domain/application/adapter)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — User, RefreshToken 모델</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — RegisterUserUseCase, LoginUseCase Port 정의</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — RegisterUserService, AuthService 구현</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — AuthController, UserController</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — UserPersistenceAdapter (JPA)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — TokenRedisAdapter (RefreshToken 저장, 블랙리스트)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Flyway 마이그레이션 SQL (V1__create_users.sql)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — AuthService, RegisterUserService (Mockito)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">헥사고날 패키지 구조 셋업 (domain/application/adapter)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Domain — User, RefreshToken 모델</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — RegisterUserUseCase, LoginUseCase Port 정의</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — RegisterUserService, AuthService 구현</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter — AuthController, UserController</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter — UserPersistenceAdapter (JPA)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter — TokenRedisAdapter (RefreshToken 저장, 블랙리스트)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Flyway 마이그레이션 SQL (V1__create_users.sql)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">단위 테스트 — AuthService, RegisterUserService (Mockito)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
           ✅ 완료 기준: 로그인 → AccessToken 반환 → /api/users/me 호출 성공
@@ -1321,15 +1337,15 @@ seats
       </div>
       <div class="phase-body" id="body-3">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Event, SeatGrade, Seat, SeatStatusService</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — EventQueryService, SeatManagementService</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In — EventController, SeatController</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In — SeatSseController (SSE endpoint)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — SseEmitterAdapter (Emitter 풀 관리)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — SeatCacheRedisAdapter (좌석 상태 캐시)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — SeatReleaseConsumer (MQ Consumer)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Flyway 마이그레이션 SQL</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">통합 테스트 — Testcontainers (MySQL + Redis)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Domain — Event, SeatGrade, Seat, SeatStatusService</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — EventQueryService, SeatManagementService</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter In — EventController, SeatController</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter In — SeatSseController (SSE endpoint)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — SseEmitterAdapter (Emitter 풀 관리)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — SeatCacheRedisAdapter (좌석 상태 캐시)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter In Messaging — SeatReleaseConsumer (MQ Consumer)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Flyway 마이그레이션 SQL</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">통합 테스트 — 실행 중인 Redis 연동 통합 테스트 (4케이스 통과)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
           ✅ 완료 기준: 좌석 상태 변경 → SSE 클라이언트 실시간 수신 확인
@@ -1568,6 +1584,393 @@ seats
     </div>
 
   </div><!-- /phases -->
+</section>
+
+<!-- ══ LEARN ARCH ══ -->
+<section id="learn-arch" class="section">
+  <div class="page-header">
+    <h1>아키텍처 개념</h1>
+    <p>이 프로젝트에서 사용한 핵심 아키텍처 패턴 설명</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏗️ MSA (Microservices Architecture) 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      하나의 큰 서버 대신, 기능별로 <strong style="color:#e2e8f0">작고 독립적인 서버 여러 개</strong>로 나눠서 운영하는 방식입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">기존 방식 (모놀리식)</span>
+  하나의 서버에 회원/공연/예약/결제 기능이 다 들어있음
+  → 배포할 때 전체를 다시 올려야 함
+  → 트래픽 많은 기능 하나 때문에 전체 서버 느려짐
+
+<span class="hi-green">MSA 방식</span>
+  User Service   ← 회원/로그인만 담당
+  Event Service  ← 공연/좌석만 담당
+  Reservation    ← 예약만 담당
+  Payment        ← 결제만 담당
+
+  → 예약 서버에 문제 생겨도 다른 서버는 정상 운영
+  → 예약 서버만 더 많이 띄워서 트래픽 대응 가능</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(108,99,255,.08);border-radius:8px;font-size:12px;color:#a78bfa">
+      💡 이 프로젝트에서는 6개 서비스로 나눴습니다: User · Event · Reservation · Payment · Notification · API Gateway
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔷 헥사고날 아키텍처 (Hexagonal) 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      <strong style="color:#e2e8f0">핵심 비즈니스 로직(도메인)이 DB나 외부 기술에 의존하지 않도록</strong> 설계하는 패턴입니다.
+      "Ports and Adapters" 패턴이라고도 부릅니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-red">문제: 전통적인 방식</span>
+  Service → Repository(JPA) 직접 호출
+  → DB를 MySQL에서 MongoDB로 바꾸면 Service 코드도 수정해야 함
+  → 테스트할 때 실제 DB가 있어야만 가능
+
+<span class="hi-green">해결: 헥사고날</span>
+  Service → <span class="hi-yellow">Port(인터페이스)</span> 호출   ← 비즈니스 로직만 있음
+               ↓
+          <span class="hi-cyan">Adapter(구현체)</span>         ← JPA / Redis / Feign 실제 구현
+
+  Service 는 "저장해줘" 라고만 말함 (SaveUserPort)
+  실제로 어떻게 저장하는지(MySQL? MongoDB?)는 Adapter가 결정
+
+  → DB 바꿔도 Service 코드 수정 없음
+  → 테스트 시 Adapter를 가짜(Mock)로 교체 가능</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(0,212,170,.08);border-radius:8px;font-size:12px;color:#00d4aa">
+      💡 이 프로젝트 구조: domain(순수 Java) → application/port(인터페이스) → adapter(JPA/Redis 구현체)
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🌐 API Gateway 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      클라이언트(앱/브라우저)와 여러 마이크로서비스 사이에 있는 <strong style="color:#e2e8f0">공통 입구</strong>입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+클라이언트
+  └─ 모든 요청을 <span class="hi-purple">API Gateway(:8080)</span> 로 보냄
+        ├─ JWT 토큰 검증 (유효한 사용자인지 확인)
+        ├─ Rate Limiting (1초에 너무 많은 요청 차단)
+        └─ 라우팅 (URL 보고 적절한 서비스로 전달)
+              /api/auth/**  → User Service
+              /api/events/** → Event Service
+              /api/reservations/** → Reservation Service
+
+장점: 각 서비스가 JWT 검증을 직접 하지 않아도 됨
+      클라이언트는 서비스가 몇 개인지 알 필요 없음</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔍 Eureka (서비스 디스커버리) 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      각 서비스의 <strong style="color:#e2e8f0">주소(IP:포트)를 자동으로 등록하고 찾아주는 전화번호부</strong> 같은 역할입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">문제: 주소를 하드코딩하면?</span>
+  Payment Service → "http://reservation-service:8083/..." 이라고 직접 적음
+  → 서버 IP가 바뀌면 코드 수정 필요
+
+<span class="hi-green">해결: Eureka</span>
+  Reservation Service 시작 → Eureka에 "나 8083이야" 등록
+  Payment Service → Eureka에 "Reservation 어디있어?" 질문
+  Eureka → "8083이야" 알려줌
+  → lb://reservation-service 처럼 이름으로만 호출 가능</div>
+  </div>
+</section>
+
+<!-- ══ LEARN REDIS ══ -->
+<section id="learn-redis" class="section">
+  <div class="page-header">
+    <h1>Redis 개념</h1>
+    <p>이 프로젝트에서 Redis를 왜, 어떻게 쓰는지</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴 Redis 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      데이터를 <strong style="color:#e2e8f0">메모리(RAM)에 저장하는 초고속 데이터베이스</strong>입니다.
+      MySQL이 디스크에 저장해서 느린 것과 달리, Redis는 메모리에 저장해서 훨씬 빠릅니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+MySQL 조회: 디스크 → 메모리 → 응답   (약 10ms)
+Redis 조회: 메모리 → 응답            (약 0.1ms)  → 100배 빠름
+
+단점: 서버 재시작하면 데이터 날아감 (영구 저장용으로는 부적합)
+용도: 캐시 / 임시 데이터 / 세션 / 순위표 / 분산락</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">⏰ TTL (Time To Live) — 자동 만료</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      Redis에 데이터를 저장할 때 <strong style="color:#e2e8f0">"몇 초 후에 자동으로 삭제해줘"</strong> 라고 설정하는 기능입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">이 프로젝트에서 활용:</span>
+
+1. 임시 예약 (5분 TTL)
+   사용자가 좌석 선택 → Redis에 저장 (TTL=300초)
+   5분 안에 결제 안 하면 → Redis가 자동 삭제 → 좌석 자동 회수
+   → 별도 배치 프로그램 없이도 자동으로 처리됨!
+
+2. 로그아웃 토큰 블랙리스트 (AccessToken 만료시간 TTL)
+   로그아웃 → 토큰 JTI를 Redis에 저장 (TTL=15분)
+   15분 후 토큰 자체가 만료되면 → 블랙리스트도 자동 삭제
+   → 불필요한 데이터 쌓이지 않음</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔒 분산락 (Distributed Lock) — Redisson</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      여러 서버가 동시에 <strong style="color:#e2e8f0">같은 자원(좌석)을 수정할 때 충돌을 막는 자물쇠</strong>입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-red">문제: 동시 선점 충돌</span>
+  사용자 A ─┐
+            ├─ 동시에 1번 좌석 선점 요청
+  사용자 B ─┘
+  → 둘 다 "성공"이 나버림 → 같은 좌석을 두 명이 예약하는 사고!
+
+<span class="hi-green">해결: Redis 분산락</span>
+  사용자 A 요청 → Redis에 "seat:lock:1" 키 생성 (락 획득)
+  사용자 B 요청 → "seat:lock:1" 이미 있음 → 대기 or 실패
+  사용자 A 처리 완료 → 락 해제
+  사용자 B → 이제 락 획득 → "이미 선점됨" 확인 후 실패 반환
+
+  → 같은 좌석을 두 명이 동시에 선점하는 일이 절대 없음!</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(248,113,113,.08);border-radius:8px;font-size:12px;color:#f87171">
+      💡 Redisson = Java에서 Redis 분산락을 쉽게 쓸 수 있게 해주는 라이브러리
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📦 Redis Hash — 좌석 캐시에 쓰는 이유</div>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">Hash 구조:</span>
+  Key: event:seats:1       ← 1번 공연의 좌석들
+  Field: "101"  Value: "AVAILABLE"
+  Field: "102"  Value: "HELD"
+  Field: "103"  Value: "SOLD"
+
+<span class="hi-green">좌석 하나만 상태 변경:</span>
+  HSET event:seats:1 "102" "SOLD"   ← 102번 좌석만 업데이트
+
+  일반 String 방식이었으면 → 전체 좌석 목록을 다시 저장해야 함
+  Hash 방식 → 바뀐 좌석 하나만 수정 가능 → 훨씬 효율적!</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📊 Sorted Set — 대기열에 쓰는 이유</div>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">Sorted Set 구조:</span>
+  Key: queue:1     ← 1번 공연 대기열
+  Member: userId   Score: 진입시각(timestamp)
+
+  진입 순서대로 자동 정렬됨!
+
+<span class="hi-green">대기열 동작:</span>
+  사용자 A가 10:00:00에 진입 → score: 1700000000
+  사용자 B가 10:00:01에 진입 → score: 1700000001
+  → ZRANGE로 조회하면 항상 A가 B보다 앞에 있음
+  → 새치기 불가능!</div>
+  </div>
+</section>
+
+<!-- ══ LEARN MQ ══ -->
+<section id="learn-mq" class="section">
+  <div class="page-header">
+    <h1>RabbitMQ 개념</h1>
+    <p>서비스 간 비동기 메시지 처리 방식</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🐰 RabbitMQ 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      서비스들 사이에서 <strong style="color:#e2e8f0">메시지(편지)를 주고받는 우체국</strong> 같은 역할입니다.
+      직접 호출하지 않고 메시지를 큐에 넣어두면, 상대방이 나중에 꺼내서 처리합니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-red">동기 방식의 문제:</span>
+  Payment → Reservation 직접 호출
+  → Reservation 서버가 죽어있으면? Payment도 실패!
+  → Reservation 처리 끝날 때까지 Payment가 기다려야 함
+
+<span class="hi-green">비동기 방식 (RabbitMQ):</span>
+  Payment → "결제 완료" 메시지를 RabbitMQ에 넣음 → 바로 응답 반환
+  Reservation → 나중에 메시지 꺼내서 처리
+  → Reservation이 잠깐 죽어도 메시지는 큐에 남아있음
+  → 서버 복구되면 이어서 처리 가능!</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📬 Exchange · Queue · Binding 관계</div>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">우체국 비유로 이해하기:</span>
+
+  Exchange = 우체국 (메시지 분류소)
+  Queue    = 우편함 (메시지가 쌓이는 곳)
+  Binding  = 우체국→우편함 배달 규칙
+  routing key = 주소
+
+<span class="hi-green">실제 동작:</span>
+  Payment Service
+    └─ "payment.completed" 라벨 붙여서 payment.exchange에 투입
+
+  payment.exchange
+    └─ "payment.completed" 라벨 보고
+         ├─ payment.completed.queue로 배달 → Reservation이 수신
+         └─ payment.completed.queue로 배달 → Notification이 수신
+
+  하나의 메시지를 여러 서비스가 동시에 받을 수 있음!</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">💀 DLQ (Dead Letter Queue) — 실패 메시지 처리</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      메시지 처리가 <strong style="color:#e2e8f0">반복 실패할 때 별도 큐로 옮겨서 나중에 처리</strong>할 수 있게 하는 장치입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">DLQ 없는 경우:</span>
+  메시지 처리 실패 → 무한 재시도 → 큐 막힘 → 다른 메시지도 처리 못함
+
+<span class="hi-green">DLQ 있는 경우:</span>
+  메시지 처리 실패 → 재시도 (최대 3회)
+  3회 다 실패 → Dead Letter Queue로 이동 (격리)
+  → 다른 메시지들은 정상 처리 계속
+  → DLQ에 쌓인 실패 메시지는 나중에 관리자가 확인/재처리</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(250,204,21,.08);border-radius:8px;font-size:12px;color:#fbbf24">
+      💡 이 프로젝트: 결제 이벤트 처리 3회 실패 → payment.dlq로 격리 → 좌석 자동 회수
+    </div>
+  </div>
+</section>
+
+<!-- ══ LEARN SPRING ══ -->
+<section id="learn-spring" class="section">
+  <div class="page-header">
+    <h1>Spring 핵심 기술</h1>
+    <p>이 프로젝트에서 사용한 Spring 기술들</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 JWT (JSON Web Token) 란?</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      로그인 후 <strong style="color:#e2e8f0">사용자 정보를 암호화해서 담은 디지털 신분증</strong>입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">기존 세션 방식:</span>
+  로그인 → 서버가 세션 저장 → 클라이언트에 세션ID 쿠키 전달
+  매 요청 → 서버가 세션 DB 조회해서 누구인지 확인
+  → 서버를 여러 대 쓰면 세션 공유 문제 발생
+
+<span class="hi-green">JWT 방식 (Stateless):</span>
+  로그인 → 서버가 JWT 토큰 생성 (사용자ID, 권한 암호화)
+  매 요청 → 클라이언트가 토큰 보냄 → 서버가 서명만 검증
+  → DB 조회 없이 토큰만 보고 누구인지 알 수 있음!
+  → 서버 여러 대여도 문제없음
+
+<span class="hi-yellow">AccessToken vs RefreshToken:</span>
+  AccessToken  = 단기 신분증 (15분) → 만료되면 폐기
+  RefreshToken = 장기 갱신권 (7일) → AccessToken 재발급용
+
+  15분마다 로그인 다시 하면 불편하니까,
+  RefreshToken으로 AccessToken을 자동 갱신!</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📡 SSE (Server-Sent Events) — 실시간 좌석 현황</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      서버가 클라이언트에게 <strong style="color:#e2e8f0">일방향으로 실시간 데이터를 밀어주는(Push) 기술</strong>입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-red">일반 HTTP 방식의 문제:</span>
+  클라이언트가 1초마다 "좌석 상태 바뀐 게 있어?" 요청 (Polling)
+  → 서버에 불필요한 요청이 계속 발생
+
+<span class="hi-green">SSE 방식:</span>
+  클라이언트 → 서버에 연결 (한 번만)
+  서버 → 좌석 상태 바뀔 때마다 클라이언트에 자동으로 전송!
+  클라이언트는 그냥 기다리면 됨
+
+  프론트엔드 코드:
+  const source = new EventSource('/api/events/1/seats/stream');
+  source.addEventListener('seat-status', (e) => {
+    // 좌석 상태 변경 시 자동으로 실행됨!
+    updateSeatUI(JSON.parse(e.data));
+  });</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(56,189,248,.08);border-radius:8px;font-size:12px;color:#38bdf8">
+      💡 WebSocket과 차이: SSE는 서버→클라이언트 단방향, WebSocket은 양방향. 실시간 알림/피드에는 SSE가 더 간단하고 충분합니다.
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">⚡ Flyway — DB 버전 관리</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      <strong style="color:#e2e8f0">데이터베이스 스키마 변경 이력을 코드로 관리</strong>하는 도구입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-red">Flyway 없이 팀 작업하면:</span>
+  "야 users 테이블에 phone 컬럼 추가했어" → 말로 전달
+  → 팀원이 못 들으면 → 로컬 DB 구조가 달라짐 → 에러 발생
+
+<span class="hi-green">Flyway 사용 시:</span>
+  V1__create_users.sql    (최초 테이블 생성)
+  V2__add_phone_column.sql (컬럼 추가)
+  V3__create_index.sql    (인덱스 추가)
+
+  서버 시작할 때 Flyway가 자동으로 순서대로 실행
+  이미 실행된 파일은 건너뜀
+  → 팀원 모두 자동으로 같은 DB 구조 유지!</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔌 Feign Client + Circuit Breaker</div>
+    <p style="font-size:13px;color:#94a3b8;line-height:1.8;margin-bottom:12px">
+      <strong style="color:#e2e8f0">다른 마이크로서비스를 HTTP로 호출할 때 사용</strong>하는 도구들입니다.
+    </p>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">Feign Client — 간단한 서비스 호출:</span>
+  @FeignClient(name = "event-service")
+  interface EventServiceClient {
+    @GetMapping("/api/events/{id}/seats/{seatId}")
+    SeatResponse getSeat(@PathVariable Long id, @PathVariable Long seatId);
+  }
+  → 일반 메서드 호출하듯이 다른 서비스 API를 호출 가능
+
+<span class="hi-red">Circuit Breaker (Resilience4j) — 장애 전파 차단:</span>
+  Event Service가 갑자기 응답 없음
+  → Reservation Service도 응답 없음 → 도미노처럼 전체 장애!
+
+<span class="hi-green">Circuit Breaker 있으면:</span>
+  Event Service 장애 감지 → Circuit Open (차단기 내림)
+  → Fallback 응답 반환 ("잠시 서비스 점검 중")
+  → Reservation Service는 정상 운영 유지
+  일정 시간 후 → Event Service 복구 확인 → Circuit Close</div>
+    <div style="margin-top:12px;padding:12px;background:rgba(74,222,128,.08);border-radius:8px;font-size:12px;color:#4ade80">
+      💡 Circuit Breaker = 전기 두꺼비집. 과부하시 자동으로 차단해서 더 큰 사고를 막음.
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🧪 단위 테스트 vs 통합 테스트</div>
+    <div class="arch-box" style="font-size:12px">
+<span class="hi-yellow">단위 테스트 (Unit Test):</span>
+  하나의 클래스/메서드만 테스트
+  외부 의존성(DB, Redis)은 Mockito로 가짜(Mock)로 대체
+  → 매우 빠름 (ms 단위)
+  → 이 프로젝트: AuthService, RegisterUserService, PaymentService 등
+
+<span class="hi-green">통합 테스트 (Integration Test):</span>
+  실제 DB, Redis를 사용해서 여러 컴포넌트가 함께 동작하는지 테스트
+  → 실제와 동일한 환경
+  → 느리지만 더 신뢰할 수 있음
+  → 이 프로젝트: SeatCacheRedisAdapterTest (실제 Redis 연동)
+
+<span class="hi-cyan">언제 뭘 쓰나:</span>
+  비즈니스 로직(if/else, 계산) → 단위 테스트
+  인프라 연동(Redis Hash 저장/조회 정상 동작?) → 통합 테스트</div>
+  </div>
 </section>
 
 </main>
