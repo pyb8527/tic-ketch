@@ -430,20 +430,95 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+  /* ── Sidebar toggle button ── */
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 200;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 12px rgba(108,99,255,.4);
+  }
+  .sidebar-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all .25s;
+  }
+  .sidebar-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+  .sidebar-toggle.open span:nth-child(2) { opacity: 0; }
+  .sidebar-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+  /* ── Overlay (모바일 사이드바 열렸을 때 배경) ── */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 99;
+  }
+  .overlay.show { display: block; }
+
   /* ── Responsive ── */
-  @media (max-width: 900px) {
-    .sidebar { width: 200px; }
-    .main { margin-left: 200px; padding: 24px; }
+  @media (max-width: 768px) {
+    .sidebar-toggle { display: flex; }
+
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      width: 260px;
+      z-index: 100;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .main {
+      margin-left: 0;
+      padding: 20px 16px;
+      padding-top: 64px; /* 토글 버튼 공간 */
+    }
+
     .grid-2, .grid-3, .stats-grid { grid-template-columns: 1fr; }
+    .hex-diagram { flex-direction: column; }
+    .arrow-label { transform: rotate(90deg); align-self: center; }
+    .page-header h1 { font-size: 22px; }
+    .arch-box { font-size: 11px; padding: 12px; }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar { width: 210px; }
+    .main { margin-left: 210px; padding: 28px 32px; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
+<!-- 모바일 토글 버튼 -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="메뉴 열기">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- 모바일 오버레이 -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
 <div class="layout">
 
 <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-title">🎫 TicKetch</div>
     <div class="logo-sub">실시간 티켓 예매 플랫폼</div>
@@ -1977,12 +2052,32 @@ Redis 조회: 메모리 → 응답            (약 0.1ms)  → 100배 빠름
 </div><!-- /layout -->
 
 <script>
+  // ── Sidebar Toggle ──
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggle  = document.getElementById('sidebarToggle');
+    const overlay = document.getElementById('overlay');
+    sidebar.classList.toggle('open');
+    toggle.classList.toggle('open');
+    overlay.classList.toggle('show');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  }
+
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarToggle').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
   // ── Navigation ──
   function show(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     event.currentTarget.classList.add('active');
+    // 모바일에서 메뉴 선택 후 자동으로 사이드바 닫기
+    if (window.innerWidth <= 768) closeSidebar();
   }
 
   // ── Phase accordion ──
