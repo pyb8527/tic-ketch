@@ -12,7 +12,6 @@ dependencyManagement {
 dependencies {
     implementation project(':common:ticketch-common')
     implementation project(':common:ticketch-events')
-    implementation project(':common:ticketch-security')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -21,6 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     implementation 'com.mysql:mysql-connector-j'
     implementation 'org.flywaydb:flyway-mysql'
@@ -29,6 +29,5 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
-    testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    testImplementation 'com.h2database:h2'
 }
