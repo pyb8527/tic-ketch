@@ -1,4 +1,3 @@
-// MQ 이벤트 DTO — 순수 Java 라이브러리
 dependencies {
     implementation project(':common:ticketch-common')
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
