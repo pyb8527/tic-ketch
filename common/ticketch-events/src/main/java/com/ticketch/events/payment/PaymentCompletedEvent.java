@@ -7,6 +7,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 결제 완료 이벤트 DTO.
+ *
+ * <p>Payment Service → RabbitMQ → Reservation Service, Notification Service
+ * <ul>
+ *   <li>Reservation Service: 예약 상태를 CONFIRMED로 변경</li>
+ *   <li>Notification Service: 결제 완료 이메일 발송</li>
+ * </ul>
+ *
+ * <p>routing key: {@code payment.completed}
+ */
 @Getter
 @Builder
 @NoArgsConstructor

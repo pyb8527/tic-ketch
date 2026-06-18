@@ -12,10 +12,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
+/**
+ * 전체 서비스 공통 예외 처리기.
+ *
+ * <p>ticketch-common 모듈에 위치하며, 각 서비스의 컴포넌트 스캔 범위에
+ * {@code com.ticketch} 패키지가 포함되면 자동으로 등록된다.
+ *
+ * <p>처리 순서:
+ * <ol>
+ *   <li>{@link BusinessException} — 비즈니스 규칙 위반</li>
+ *   <li>{@link MethodArgumentNotValidException} — @Valid 검증 실패</li>
+ *   <li>{@link BindException} — @ModelAttribute 바인딩 실패</li>
+ *   <li>{@link HttpMessageNotReadableException} — JSON 파싱 실패</li>
+ *   <li>{@link Exception} — 그 외 모든 예외 (500)</li>
+ * </ol>
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 비즈니스 규칙 위반 처리.
+     * ErrorCode에 정의된 HTTP 상태코드로 응답한다.
+     */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         log.warn("BusinessException: {}", e.getMessage());
@@ -25,6 +44,10 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(errorCode));
     }
 
+    /**
+     * @Valid, @Validated 검증 실패 처리.
+     * 각 필드의 오류 메시지를 FieldError 목록으로 반환한다.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
         List<ErrorResponse.FieldError> fieldErrors = e.getBindingResult()
@@ -42,6 +65,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, fieldErrors));
     }
 
+    /** @ModelAttribute 바인딩 실패 처리 */
     @ExceptionHandler(BindException.class)
     public ResponseEntity<ErrorResponse> handleBindException(BindException e) {
         List<ErrorResponse.FieldError> fieldErrors = e.getBindingResult()
@@ -59,6 +83,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ErrorCode.INVALID_INPUT, fieldErrors));
     }
 
+    /** 요청 바디 JSON 파싱 실패 처리 (잘못된 형식, 누락된 필드 등) */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         log.warn("HttpMessageNotReadableException: {}", e.getMessage());
@@ -67,6 +92,7 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(ErrorCode.INVALID_INPUT));
     }
 
+    /** 처리되지 않은 모든 예외 — 500 Internal Server Error */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         log.error("Unhandled exception", e);

@@ -3,6 +3,19 @@ package com.ticketch.common.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 전체 서비스 공통 에러 코드 정의.
+ *
+ * <p>포맷: HTTP 상태코드 + 도메인 접두사 코드 + 메시지
+ * <ul>
+ *   <li>U : User 도메인</li>
+ *   <li>E : Event 도메인</li>
+ *   <li>S : Seat 도메인</li>
+ *   <li>R : Reservation 도메인</li>
+ *   <li>P : Payment 도메인</li>
+ *   <li>C : Common (공통)</li>
+ * </ul>
+ */
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
@@ -41,6 +54,7 @@ public enum ErrorCode {
     // ── Common ────────────────────────────────────────────────
     INVALID_INPUT(400, "C001", "잘못된 입력값입니다"),
     ACCESS_DENIED(403, "C002", "접근 권한이 없습니다"),
+    /** Redis 분산락 획득 실패 시 반환 — 동시 요청 충돌 */
     LOCK_ACQUISITION_FAILED(409, "C003", "요청이 너무 많습니다. 잠시 후 다시 시도해주세요"),
     INTERNAL_SERVER_ERROR(500, "C004", "서버 오류가 발생했습니다");
 
