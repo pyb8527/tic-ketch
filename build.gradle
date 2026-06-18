@@ -1,0 +1,41 @@
+plugins {
+    id 'org.springframework.boot' version '3.3.5' apply false
+    id 'io.spring.dependency-management' version '1.1.6' apply false
+}
+
+ext {
+    springCloudVersion = '2023.0.3'
+    jjwtVersion        = '0.12.6'
+    redissonVersion    = '3.35.0'
+    querydslVersion    = '5.1.0'
+    testcontainersVersion = '1.20.4'
+    lombokVersion      = '1.18.34'
+}
+
+allprojects {
+    group   = 'com.ticketch'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}

@@ -1,0 +1,18 @@
+rootProject.name = 'tic-ketch'
+
+// Common
+include ':common:ticketch-common'
+include ':common:ticketch-events'
+include ':common:ticketch-security'
+
+// Infrastructure
+include ':infrastructure:eureka-server'
+include ':infrastructure:config-server'
+include ':infrastructure:api-gateway'
+
+// Services
+include ':services:user-service'
+include ':services:event-service'
+include ':services:reservation-service'
+include ':services:payment-service'
+include ':services:notification-service'

@@ -1,0 +1,9 @@
+// 순수 Java 라이브러리 — Spring Boot 의존 없음
+dependencies {
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+}
+
+// 실행 가능한 jar 아닌 라이브러리 jar
+jar { enabled = true }

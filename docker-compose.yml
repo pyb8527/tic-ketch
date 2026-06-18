@@ -1,0 +1,205 @@
+services:
+
+  # ── MySQL (서비스별 독립 DB) ──────────────────────────────────
+  mysql-user:
+    image: mysql:8.0
+    container_name: ticketch-mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ticketch_user
+      TZ: Asia/Seoul
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql-user-data:/var/lib/mysql
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-event:
+    image: mysql:8.0
+    container_name: ticketch-mysql-event
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ticketch_event
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-event-data:/var/lib/mysql
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-reservation:
+    image: mysql:8.0
+    container_name: ticketch-mysql-reservation
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ticketch_reservation
+      TZ: Asia/Seoul
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-reservation-data:/var/lib/mysql
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-payment:
+    image: mysql:8.0
+    container_name: ticketch-mysql-payment
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ticketch_payment
+      TZ: Asia/Seoul
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-payment-data:/var/lib/mysql
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── MongoDB (Notification Service) ───────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: ticketch-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: ticketch_notification
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - ticketch-net
+
+  # ── Redis ────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: ticketch-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── RabbitMQ ─────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: ticketch-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"   # Management UI
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Zipkin ───────────────────────────────────────────────────
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: ticketch-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - ticketch-net
+
+  # ── Jenkins (CI) ─────────────────────────────────────────────
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17
+    container_name: ticketch-jenkins
+    profiles:
+      - ci
+    ports:
+      - "8090:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ticketch-net
+
+  # ── SonarQube (CI) ───────────────────────────────────────────
+  sonar-db:
+    image: postgres:15-alpine
+    container_name: ticketch-sonar-db
+    profiles:
+      - ci
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonarqube
+    volumes:
+      - sonar-db-data:/var/lib/postgresql/data
+    networks:
+      - ticketch-net
+
+  sonarqube:
+    image: sonarqube:10-community
+    container_name: ticketch-sonarqube
+    profiles:
+      - ci
+    depends_on:
+      - sonar-db
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-logs:/opt/sonarqube/logs
+    networks:
+      - ticketch-net
+
+networks:
+  ticketch-net:
+    driver: bridge
+
+volumes:
+  mysql-user-data:
+  mysql-event-data:
+  mysql-reservation-data:
+  mysql-payment-data:
+  mongodb-data:
+  redis-data:
+  rabbitmq-data:
+  jenkins-data:
+  sonar-db-data:
+  sonarqube-data:
+  sonarqube-logs:

@@ -1227,11 +1227,11 @@ seats
       </div>
       <div class="phase-body" id="body-0">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">docker-compose.yml 작성 (MySQL×5, Redis, RabbitMQ, Zipkin, Eureka, Config, Jenkins, SonarQube)</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">settings.gradle · 루트 build.gradle 멀티모듈 설정</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">config-repo/ 생성 — 서비스별 application.yml 초안</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Eureka Server 구현 (@EnableEurekaServer)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Config Server 구현 (@EnableConfigServer, Git 연동)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">docker-compose.yml 작성 (MySQL×4, MongoDB, Redis, RabbitMQ, Zipkin, Jenkins, SonarQube)</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">settings.gradle · 루트 build.gradle 멀티모듈 설정</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">config-repo/ 생성 — 서비스별 application.yml 초안</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Eureka Server 구현 (@EnableEurekaServer)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Config Server 구현 (@EnableConfigServer, Git 연동)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
           ✅ 완료 기준: docker-compose up 후 Eureka 대시보드 :8761 접근 가능
