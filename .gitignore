@@ -1,0 +1,55 @@
+# ── Java / Spring Boot ──
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+target/
+build/
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# ── IDE ──
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+
+# ── Node / React ──
+node_modules/
+dist/
+.next/
+.nuxt/
+.cache/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Environment ──
+.env
+.env.local
+.env.*.local
+application-secret.yml
+application-prod.yml
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Docker ──
+.docker/
+
+# ── Logs ──
+logs/
+*.log
+
+# ── Test / Coverage ──
+.sonar/
+coverage/
+htmlcov/

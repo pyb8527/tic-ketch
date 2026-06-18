@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TicKetch — 구현 계획</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffd93d;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --done: #00d4aa;
+    --todo: #6c63ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
+  /* ── Sidebar ── */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 10;
+  }
+  .sidebar-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo .logo-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .sidebar-logo .logo-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .nav-item:hover, .nav-item.active {
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Main ── */
+  .main { margin-left: 240px; padding: 40px 48px; max-width: 1100px; }
+
+  /* ── Section ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Page header ── */
+  .page-header { margin-bottom: 36px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  .page-header p { color: var(--text2); font-size: 14px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-top: 8px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── Grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ── Tech badges ── */
+  .badge-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ── Architecture ── */
+  .arch-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    color: #a9b1d6;
+    line-height: 1.8;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .arch-box .hi-blue  { color: #7aa2f7; }
+  .arch-box .hi-green { color: #9ece6a; }
+  .arch-box .hi-red   { color: #f7768e; }
+  .arch-box .hi-yellow{ color: #e0af68; }
+  .arch-box .hi-purple{ color: #bb9af7; }
+  .arch-box .hi-cyan  { color: #2ac3de; }
+
+  /* ── Service cards ── */
+  .service-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    transition: border-color .2s;
+  }
+  .service-card:hover { border-color: var(--accent); }
+  .service-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .service-port {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(108,99,255,.15);
+    padding: 1px 7px;
+    border-radius: 4px;
+  }
+  .service-desc { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
+  .service-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .service-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Phase timeline ── */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  .phase-item {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .phase-dot {
+    position: absolute;
+    left: -24px;
+    top: 14px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all .2s;
+    z-index: 1;
+  }
+  .phase-dot.active-phase { border-color: var(--accent); background: var(--accent); }
+  .phase-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color .2s;
+    user-select: none;
+  }
+  .phase-header:hover { border-color: var(--accent); }
+  .phase-header.open { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .phase-left { display: flex; align-items: center; gap: 12px; }
+  .phase-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .phase-title { font-size: 14px; font-weight: 600; }
+  .phase-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .phase-right { display: flex; align-items: center; gap: 10px; }
+  .phase-days {
+    font-size: 11px;
+    color: var(--text3);
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .chevron { color: var(--text3); transition: transform .2s; font-size: 12px; }
+  .open .chevron { transform: rotate(180deg); }
+  .phase-body {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 16px 18px;
+  }
+  .phase-body.show { display: block; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .check-box.checked {
+    background: var(--done);
+    border-color: var(--done);
+    color: #000;
+    font-size: 10px;
+  }
+  .check-box.checked::after { content: '✓'; }
+  .check-text.checked-text { text-decoration: line-through; color: var(--text3); }
+  .sub-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* ── Module diagram ── */
+  .module-tree {
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: #a9b1d6;
+    line-height: 2;
+  }
+  .mt-common { color: #7aa2f7; }
+  .mt-infra  { color: #9ece6a; }
+  .mt-service{ color: #e0af68; }
+  .mt-note   { color: #64748b; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--text2);
+    font-weight: 600;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  code {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 11px;
+    color: #7aa2f7;
+  }
+
+  /* ── Progress ── */
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+    transition: width .3s;
+  }
+
+  /* ── Summary stats ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* ── Hexagonal diagram ── */
+  .hex-diagram {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  .hex-layer {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .hex-layer-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .hex-item {
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+  .arrow-label {
+    display: flex;
+    align-items: center;
+    color: var(--text3);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sidebar { width: 200px; }
+    .main { margin-left: 200px; padding: 24px; }
+    .grid-2, .grid-3, .stats-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">🎫 TicKetch</div>
+    <div class="logo-sub">실시간 티켓 예매 플랫폼</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">개요</div>
+    <a class="nav-item active" onclick="show('overview')">
+      <span class="nav-dot" style="background:#6c63ff"></span> 프로젝트 개요
+    </a>
+    <a class="nav-item" onclick="show('stack')">
+      <span class="nav-dot" style="background:#00d4aa"></span> 기술 스택
+    </a>
+    <a class="nav-item" onclick="show('arch')">
+      <span class="nav-dot" style="background:#ffd93d"></span> 전체 아키텍처
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">설계</div>
+    <a class="nav-item" onclick="show('modules')">
+      <span class="nav-dot" style="background:#ff6b6b"></span> 멀티모듈 구조
+    </a>
+    <a class="nav-item" onclick="show('hexagonal')">
+      <span class="nav-dot" style="background:#a78bfa"></span> 헥사고날 아키텍처
+    </a>
+    <a class="nav-item" onclick="show('services')">
+      <span class="nav-dot" style="background:#34d399"></span> 서비스 설계
+    </a>
+    <a class="nav-item" onclick="show('common')">
+      <span class="nav-dot" style="background:#fb923c"></span> Common 모듈
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">인프라</div>
+    <a class="nav-item" onclick="show('data')">
+      <span class="nav-dot" style="background:#60a5fa"></span> 데이터 모델
+    </a>
+    <a class="nav-item" onclick="show('redis')">
+      <span class="nav-dot" style="background:#f87171"></span> Redis 설계
+    </a>
+    <a class="nav-item" onclick="show('mq')">
+      <span class="nav-dot" style="background:#facc15"></span> RabbitMQ 설계
+    </a>
+    <a class="nav-item" onclick="show('cicd')">
+      <span class="nav-dot" style="background:#4ade80"></span> CI/CD (Jenkins)
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">구현</div>
+    <a class="nav-item" onclick="show('test')">
+      <span class="nav-dot" style="background:#c084fc"></span> 테스트 전략
+    </a>
+    <a class="nav-item" onclick="show('plan')">
+      <span class="nav-dot" style="background:#38bdf8"></span> 구현 계획
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main">
+
+<!-- ══ OVERVIEW ══ -->
+<section id="overview" class="section active">
+  <div class="page-header">
+    <h1>🎫 TicKetch</h1>
+    <p>분산환경 기반 실시간 티켓 예매 플랫폼 — 백엔드 포트폴리오 프로젝트</p>
+    <div>
+      <span class="tag" style="background:rgba(108,99,255,.2);color:#a78bfa;border:1px solid rgba(108,99,255,.3)">MSA</span>
+      <span class="tag" style="background:rgba(0,212,170,.15);color:#00d4aa;border:1px solid rgba(0,212,170,.3)">멀티모듈</span>
+      <span class="tag" style="background:rgba(251,146,60,.15);color:#fb923c;border:1px solid rgba(251,146,60,.3)">헥사고날</span>
+      <span class="tag" style="background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3)">분산락</span>
+      <span class="tag" style="background:rgba(250,204,21,.15);color:#fbbf24;border:1px solid rgba(250,204,21,.3)">RabbitMQ DLQ</span>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num">6</div>
+      <div class="stat-label">마이크로서비스</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#00d4aa">3</div>
+      <div class="stat-label">공통 모듈</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#ffd93d">11</div>
+      <div class="stat-label">구현 단계</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:#ff6b6b">17일</div>
+      <div class="stat-label">예상 기간</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">⭐ 핵심 기능</div>
+      <ul class="checklist" style="pointer-events:none">
+        <li><div class="check-box checked"></div><span>실시간 좌석 조회 (SSE)</span></li>
+        <li><div class="check-box checked"></div><span>분산 좌석 선점 (Redisson)</span></li>
+        <li><div class="check-box checked"></div><span>예약 타임아웃 자동 회수 (Redis TTL)</span></li>
+        <li><div class="check-box checked"></div><span>오픈런 대기열 (Redis Sorted Set)</span></li>
+        <li><div class="check-box checked"></div><span>비동기 결제 (RabbitMQ DLQ)</span></li>
+        <li><div class="check-box checked"></div><span>목업 결제 플로우</span></li>
+        <li><div class="check-box checked"></div><span>관리자 공연·좌석 관리</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 포트폴리오 포인트</div>
+      <ul class="checklist" style="pointer-events:none">
+        <li><div class="check-box checked"></div><span>MSA 서비스 독립 배포</span></li>
+        <li><div class="check-box checked"></div><span>멀티모듈 공유 라이브러리 분리</span></li>
+        <li><div class="check-box checked"></div><span>헥사고날 — 도메인이 인프라를 모름</span></li>
+        <li><div class="check-box checked"></div><span>Race Condition 방지 (분산락 + Optimistic Lock)</span></li>
+        <li><div class="check-box checked"></div><span>Circuit Breaker (Resilience4j)</span></li>
+        <li><div class="check-box checked"></div><span>분산 추적 (Micrometer + Zipkin)</span></li>
+        <li><div class="check-box checked"></div><span>Jenkins Multibranch CI/CD</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STACK ══ -->
+<section id="stack" class="section">
+  <div class="page-header">
+    <h1>기술 스택</h1>
+    <p>서비스별 사용 기술과 선택 근거</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">⚙️ Backend</div>
+      <table>
+        <tr><th>항목</th><th>기술</th><th>버전</th></tr>
+        <tr><td>Language</td><td><code>Java</code></td><td>21</td></tr>
+        <tr><td>Framework</td><td><code>Spring Boot</code></td><td>3.3</td></tr>
+        <tr><td>Build</td><td><code>Gradle Multi-Module</code></td><td>8.x</td></tr>
+        <tr><td>ORM</td><td><code>Spring Data JPA + QueryDSL</code></td><td>-</td></tr>
+        <tr><td>Migration</td><td><code>Flyway</code></td><td>-</td></tr>
+        <tr><td>Cache / Lock</td><td><code>Redis 7 + Redisson</code></td><td>-</td></tr>
+        <tr><td>Message Queue</td><td><code>RabbitMQ 3.13</code></td><td>-</td></tr>
+        <tr><td>Discovery</td><td><code>Spring Cloud Eureka</code></td><td>-</td></tr>
+        <tr><td>Gateway</td><td><code>Spring Cloud Gateway</code></td><td>-</td></tr>
+        <tr><td>Auth</td><td><code>JWT (JJWT 0.12)</code></td><td>-</td></tr>
+        <tr><td>Circuit Breaker</td><td><code>Resilience4j</code></td><td>-</td></tr>
+        <tr><td>Tracing</td><td><code>Micrometer + Zipkin</code></td><td>-</td></tr>
+        <tr><td>Docs</td><td><code>SpringDoc OpenAPI 3</code></td><td>-</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">🎨 Frontend & Infra</div>
+      <table>
+        <tr><th>항목</th><th>기술</th></tr>
+        <tr><td>Framework</td><td><code>React 18 + TypeScript</code></td></tr>
+        <tr><td>UI</td><td><code>Tailwind CSS + shadcn/ui</code></td></tr>
+        <tr><td>상태관리</td><td><code>Zustand + React Query</code></td></tr>
+        <tr><td>실시간</td><td><code>SSE (EventSource API)</code></td></tr>
+        <tr><td>HTTP</td><td><code>Axios</code></td></tr>
+        <tr><td style="padding-top:16px;color:#64748b" colspan="2">인프라</td></tr>
+        <tr><td>컨테이너</td><td><code>Docker Compose</code></td></tr>
+        <tr><td>CI/CD</td><td><code>Jenkins Multibranch</code></td></tr>
+        <tr><td>코드 품질</td><td><code>SonarQube (커버리지 60%)</code></td></tr>
+        <tr><td>모니터링</td><td><code>Zipkin</code></td></tr>
+        <tr><td>DB (서비스별)</td><td><code>MySQL 8</code></td></tr>
+        <tr><td>Notification DB</td><td><code>MongoDB</code></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ARCH ══ -->
+<section id="arch" class="section">
+  <div class="page-header">
+    <h1>전체 아키텍처</h1>
+    <p>MSA 서비스 구성 및 통신 흐름</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗺️ 시스템 다이어그램</div>
+    <div class="arch-box"><span class="hi-blue">[React Client]</span>
+      │  REST / SSE
+      ▼
+┌─────────────────────────────────────────────────────┐
+│              <span class="hi-purple">API Gateway  :8080</span>                       │
+│     JWT 검증 필터 · Rate Limiter · 라우팅             │
+└──┬──────────┬──────────┬──────────┬─────────────────┘
+   │          │          │          │
+   ▼          ▼          ▼          ▼
+<span class="hi-green">[User     [Event    [Reserv.  [Payment</span>
+<span class="hi-green"> :8081]    :8082]    :8083]    :8084]</span>
+   │          │          │          │
+   ▼          ▼          ▼          ▼
+<span class="hi-yellow">[MySQL]  [MySQL]  [MySQL]  [MySQL]</span>
+                   <span class="hi-red">[Redis :6379]</span> ◄─────┘
+                   └── 분산락 · TTL · 대기열
+
+                         │  <span class="hi-yellow">RabbitMQ :5672</span>
+                         ▼
+               payment.exchange
+                 ├── payment.completed ──► <span class="hi-green">Reservation</span> (확정)
+                 │                    ──► <span class="hi-cyan">Notification</span> (메일)
+                 ├── payment.failed   ──► <span class="hi-green">Reservation</span> (회수)
+                 │                    ──► <span class="hi-cyan">Notification</span> (알림)
+                 └── payment.dlq      ──► Dead Letter (3회 실패)
+
+<span class="hi-cyan">[Notification :8085]</span> ──► MongoDB (발송 이력)
+
+<span class="hi-blue">[Eureka    :8761]</span>  ← 서비스 레지스트리
+<span class="hi-blue">[Config    :8888]</span>  ← 환경별 설정 중앙화
+<span class="hi-blue">[Zipkin    :9411]</span>  ← 분산 추적
+<span class="hi-blue">[Jenkins   :8090]</span>  ← CI/CD
+<span class="hi-blue">[SonarQube :9000]</span>  ← 코드 품질</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">↔️ 서비스 간 통신</div>
+    <table>
+      <tr><th>방식</th><th>From → To</th><th>용도</th></tr>
+      <tr><td><span class="tag" style="background:rgba(108,99,255,.2);color:#a78bfa;font-size:11px">Feign 동기</span></td><td>Reservation → Event</td><td>좌석 유효성 검증</td></tr>
+      <tr><td><span class="tag" style="background:rgba(108,99,255,.2);color:#a78bfa;font-size:11px">Feign 동기</span></td><td>Payment → Reservation</td><td>예약 상태 검증</td></tr>
+      <tr><td><span class="tag" style="background:rgba(250,204,21,.2);color:#fbbf24;font-size:11px">RabbitMQ 비동기</span></td><td>Payment → Reservation</td><td>결제 완료/실패 처리</td></tr>
+      <tr><td><span class="tag" style="background:rgba(250,204,21,.2);color:#fbbf24;font-size:11px">RabbitMQ 비동기</span></td><td>Payment → Notification</td><td>확정/실패 알림 발송</td></tr>
+      <tr><td><span class="tag" style="background:rgba(250,204,21,.2);color:#fbbf24;font-size:11px">RabbitMQ 비동기</span></td><td>Reservation → Event</td><td>좌석 상태 변경</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ MODULES ══ -->
+<section id="modules" class="section">
+  <div class="page-header">
+    <h1>멀티모듈 구조</h1>
+    <p>Gradle 멀티모듈 — 공유 라이브러리 분리 및 서비스별 독립 모듈</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📁 전체 모듈 구조</div>
+    <div class="module-tree">tic-ketch/
+├── settings.gradle
+├── build.gradle                    <span style="color:#64748b">← 공통 의존성 정의</span>
+├── docker-compose.yml
+│
+├── <span class="mt-common">common/</span>                           <span style="color:#64748b">← 공유 라이브러리</span>
+│   ├── <span class="mt-common">ticketch-common/</span>              <span style="color:#64748b">API 응답, 예외, 유틸</span>
+│   ├── <span class="mt-common">ticketch-events/</span>              <span style="color:#64748b">MQ 이벤트 DTO</span>
+│   └── <span class="mt-common">ticketch-security/</span>            <span style="color:#64748b">JWT 파싱 유틸</span>
+│
+├── <span class="mt-infra">infrastructure/</span>                   <span style="color:#64748b">← 인프라 서비스</span>
+│   ├── <span class="mt-infra">eureka-server/</span>
+│   ├── <span class="mt-infra">config-server/</span>
+│   ├── <span class="mt-infra">api-gateway/</span>
+│   └── <span class="mt-infra">config-repo/</span>                  <span style="color:#64748b">← Git Config 저장소</span>
+│
+└── <span class="mt-service">services/</span>                         <span style="color:#64748b">← 비즈니스 마이크로서비스</span>
+    ├── <span class="mt-service">user-service/</span>
+    ├── <span class="mt-service">event-service/</span>
+    ├── <span class="mt-service">reservation-service/</span>          <span style="color:#64748b">← 핵심 서비스</span>
+    ├── <span class="mt-service">payment-service/</span>
+    └── <span class="mt-service">notification-service/</span></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔗 모듈 의존 관계</div>
+    <table>
+      <tr><th>모듈</th><th>의존하는 모듈</th><th>비고</th></tr>
+      <tr><td><code>ticketch-events</code></td><td><code>ticketch-common</code></td><td>이벤트 DTO에 공통 타입 사용</td></tr>
+      <tr><td><code>ticketch-security</code></td><td><code>ticketch-common</code></td><td>JWT 예외에 ErrorCode 사용</td></tr>
+      <tr><td>모든 서비스</td><td><code>ticketch-common</code></td><td>ApiResponse, BusinessException</td></tr>
+      <tr><td>reservation-service</td><td><code>ticketch-events</code></td><td>MQ Consumer (이벤트 수신)</td></tr>
+      <tr><td>payment-service</td><td><code>ticketch-events</code></td><td>MQ Producer (이벤트 발행)</td></tr>
+      <tr><td>notification-service</td><td><code>ticketch-events</code></td><td>MQ Consumer (이벤트 수신)</td></tr>
+      <tr><td>event-service</td><td><code>ticketch-events</code></td><td>MQ Consumer (seat.release)</td></tr>
+      <tr><td>api-gateway</td><td><code>ticketch-security</code></td><td>JWT 검증 필터</td></tr>
+      <tr><td>user-service</td><td><code>ticketch-security</code></td><td>JWT 발급</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ HEXAGONAL ══ -->
+<section id="hexagonal" class="section">
+  <div class="page-header">
+    <h1>헥사고날 아키텍처</h1>
+    <p>Ports & Adapters — 도메인이 인프라를 모르는 구조</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔷 레이어 구조 원칙</div>
+    <div class="hex-diagram">
+      <div class="hex-layer" style="border-color:#f87171">
+        <div class="hex-layer-title" style="color:#f87171">Adapter In</div>
+        <div class="hex-item">REST Controller</div>
+        <div class="hex-item">MQ Consumer</div>
+        <div style="font-size:10px;color:#64748b;margin-top:6px">외부 → 내부 호출</div>
+      </div>
+      <div class="arrow-label">→</div>
+      <div class="hex-layer" style="border-color:#fbbf24">
+        <div class="hex-layer-title" style="color:#fbbf24">Application</div>
+        <div class="hex-item">Port In (UseCase)</div>
+        <div class="hex-item">Service (구현)</div>
+        <div class="hex-item">Port Out (인터페이스)</div>
+        <div style="font-size:10px;color:#64748b;margin-top:6px">비즈니스 조율</div>
+      </div>
+      <div class="arrow-label">→</div>
+      <div class="hex-layer" style="border-color:#a78bfa">
+        <div class="hex-layer-title" style="color:#a78bfa">Domain</div>
+        <div class="hex-item">Model (Entity)</div>
+        <div class="hex-item">Domain Service</div>
+        <div style="font-size:10px;color:#64748b;margin-top:6px">순수 비즈니스 규칙<br>Spring 의존 없음</div>
+      </div>
+      <div class="arrow-label">←</div>
+      <div class="hex-layer" style="border-color:#34d399">
+        <div class="hex-layer-title" style="color:#34d399">Adapter Out</div>
+        <div class="hex-item">JPA Persistence</div>
+        <div class="hex-item">Redis Adapter</div>
+        <div class="hex-item">MQ Publisher</div>
+        <div class="hex-item">Feign Client</div>
+        <div style="font-size:10px;color:#64748b;margin-top:6px">Port Out 구현체</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📦 서비스 공통 패키지 구조</div>
+    <div class="module-tree">com.ticketch.{service}/
+│
+├── <span class="mt-common">domain/</span>
+│   ├── model/                  <span style="color:#64748b">핵심 도메인 객체 (순수 Java, 프레임워크 의존 없음)</span>
+│   └── service/                <span style="color:#64748b">도메인 서비스 (비즈니스 규칙)</span>
+│
+├── <span class="mt-service">application/</span>
+│   ├── port/
+│   │   ├── in/                 <span style="color:#64748b">Input Port — UseCase 인터페이스</span>
+│   │   └── out/                <span style="color:#64748b">Output Port — Repository/MQ/Cache 인터페이스</span>
+│   └── service/                <span style="color:#64748b">UseCase 구현체 (Input Port implements)</span>
+│
+└── <span class="mt-infra">adapter/</span>
+    ├── in/
+    │   ├── web/                <span style="color:#64748b">REST Controller + Request/Response DTO</span>
+    │   └── messaging/          <span style="color:#64748b">RabbitMQ Consumer</span>
+    └── out/
+        ├── persistence/        <span style="color:#64748b">JPA Entity + Repository + PersistenceAdapter</span>
+        ├── messaging/          <span style="color:#64748b">RabbitMQ Publisher</span>
+        ├── redis/              <span style="color:#64748b">Redis Adapter</span>
+        └── external/           <span style="color:#64748b">Feign Client</span></div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📌 핵심 규칙</div>
+    <ul class="checklist" style="pointer-events:none">
+      <li><div class="check-box checked"></div><span><code>domain</code> 패키지는 Spring · JPA · Redis 의존성 없음 (순수 Java)</span></li>
+      <li><div class="check-box checked"></div><span><code>application/port/out</code>은 인터페이스만 — 구현체는 <code>adapter/out</code>에</span></li>
+      <li><div class="check-box checked"></div><span>Controller는 UseCase 인터페이스만 호출 — 구현 서비스 직접 참조 금지</span></li>
+      <li><div class="check-box checked"></div><span><code>adapter/out/persistence</code> JPA Entity는 Domain Model과 별도로 매핑</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section id="services" class="section">
+  <div class="page-header">
+    <h1>서비스별 설계</h1>
+    <p>각 마이크로서비스의 역할, 구성, 핵심 로직</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="service-card">
+      <div class="service-name">User Service <span class="service-port">:8081</span></div>
+      <div class="service-desc">회원가입, 로그인, JWT 발급, 토큰 갱신/무효화</div>
+      <div class="service-tags">
+        <span class="service-tag">JWT</span>
+        <span class="service-tag">Redis 블랙리스트</span>
+        <span class="service-tag">BCrypt</span>
+        <span class="service-tag">MySQL</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#64748b">테스트: 단위 테스트 (JWT 로직 순수 함수)</div>
+    </div>
+    <div class="service-card">
+      <div class="service-name">Event Service <span class="service-port">:8082</span></div>
+      <div class="service-desc">공연·좌석 CRUD, 실시간 좌석 상태 SSE, 좌석 캐시</div>
+      <div class="service-tags">
+        <span class="service-tag">SSE</span>
+        <span class="service-tag">Redis 캐시</span>
+        <span class="service-tag">MQ Consumer</span>
+        <span class="service-tag">MySQL</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#64748b">테스트: 통합 테스트 (Redis + JPA + SSE)</div>
+    </div>
+    <div class="service-card" style="border-color:rgba(108,99,255,.3)">
+      <div class="service-name">Reservation Service <span class="service-port">:8083</span></div>
+      <div class="service-desc">좌석 임시 선점(분산락), TTL 관리, 대기열, 예약 확정/취소</div>
+      <div class="service-tags">
+        <span class="service-tag" style="color:#a78bfa;border-color:rgba(167,139,250,.3)">Redisson 분산락</span>
+        <span class="service-tag">Redis TTL</span>
+        <span class="service-tag">Sorted Set 대기열</span>
+        <span class="service-tag">Feign</span>
+        <span class="service-tag">Scheduler</span>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:rgba(108,99,255,.08);border-radius:6px;font-size:12px;color:#a78bfa">
+        ⚡ 핵심 플로우: 좌석 검증 → 분산락 획득 → DB 중복 확인 → 예약 생성 → Redis TTL → 락 해제
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#64748b">테스트: 통합 테스트 (동시 선점 시나리오)</div>
+    </div>
+    <div class="service-card">
+      <div class="service-name">Payment Service <span class="service-port">:8084</span></div>
+      <div class="service-desc">목업 결제 처리, RabbitMQ 이벤트 발행, 환불</div>
+      <div class="service-tags">
+        <span class="service-tag">Mock PG (90% 성공)</span>
+        <span class="service-tag">MQ Producer</span>
+        <span class="service-tag">DLQ</span>
+        <span class="service-tag">Feign</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#64748b">테스트: 단위 테스트 (Mock PG 분기 로직)</div>
+    </div>
+    <div class="service-card">
+      <div class="service-name">Notification Service <span class="service-port">:8085</span></div>
+      <div class="service-desc">MQ 이벤트 수신 후 이메일 알림 발송, 발송 이력 저장</div>
+      <div class="service-tags">
+        <span class="service-tag">MQ Consumer</span>
+        <span class="service-tag">Mock Email</span>
+        <span class="service-tag">MongoDB</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#64748b">테스트: 단위 테스트 (Consumer 로직 Mock)</div>
+    </div>
+    <div class="service-card">
+      <div class="service-name">API Gateway <span class="service-port">:8080</span></div>
+      <div class="service-desc">라우팅, JWT 검증 필터, Rate Limiting, CORS</div>
+      <div class="service-tags">
+        <span class="service-tag">Spring Cloud Gateway</span>
+        <span class="service-tag">JWT Filter</span>
+        <span class="service-tag">Rate Limit</span>
+        <span class="service-tag">Eureka lb://</span>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#64748b">모든 트래픽의 진입점 — X-User-Id Header 주입</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMMON ══ -->
+<section id="common" class="section">
+  <div class="page-header">
+    <h1>Common 모듈 설계</h1>
+    <p>서비스 간 공유 코드 — 중복 제거 및 일관성 보장</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title" style="color:#7aa2f7">📦 ticketch-common</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">모든 서비스 의존 · Spring 없는 순수 Java</div>
+      <div class="module-tree" style="font-size:11px;line-height:1.8">response/
+  ApiResponse&lt;T&gt;
+  ErrorResponse
+exception/
+  BusinessException
+  ErrorCode (Enum)
+util/
+  PageUtil</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#e0af68">📨 ticketch-events</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">MQ Producer ↔ Consumer 공유 DTO</div>
+      <div class="module-tree" style="font-size:11px;line-height:1.8">payment/
+  PaymentCompletedEvent
+  PaymentFailedEvent
+reservation/
+  SeatHeldEvent
+  SeatReleasedEvent
+notification/
+  NotificationRequestEvent</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#9ece6a">🔐 ticketch-security</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">JWT 발급/파싱/검증 유틸</div>
+      <div class="module-tree" style="font-size:11px;line-height:1.8">JwtTokenProvider
+  생성 / 검증 / 파싱
+
+JwtProperties
+  secret (Config 주입)
+  accessExpiry
+  refreshExpiry
+
+UserPrincipal
+  userId, email, role</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">⚠️ ErrorCode 목록</div>
+    <table>
+      <tr><th>코드</th><th>HTTP</th><th>메시지</th></tr>
+      <tr><td><code>U001</code></td><td>404</td><td>사용자를 찾을 수 없습니다</td></tr>
+      <tr><td><code>U002</code></td><td>409</td><td>이미 사용 중인 이메일입니다</td></tr>
+      <tr><td><code>U003</code></td><td>401</td><td>비밀번호가 올바르지 않습니다</td></tr>
+      <tr><td><code>S001</code></td><td>404</td><td>좌석을 찾을 수 없습니다</td></tr>
+      <tr><td><code>S002</code></td><td>409</td><td>이미 선점된 좌석입니다</td></tr>
+      <tr><td><code>R001</code></td><td>410</td><td>예약 시간이 만료되었습니다</td></tr>
+      <tr><td><code>R002</code></td><td>404</td><td>예약을 찾을 수 없습니다</td></tr>
+      <tr><td><code>P001</code></td><td>404</td><td>결제 정보를 찾을 수 없습니다</td></tr>
+      <tr><td><code>P002</code></td><td>409</td><td>이미 완료된 결제입니다</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ DATA ══ -->
+<section id="data" class="section">
+  <div class="page-header">
+    <h1>데이터 모델</h1>
+    <p>Database per Service 패턴 — 각 서비스 독립 스키마</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">👤 User Service — MySQL</div>
+      <div class="arch-box" style="font-size:11px">users
+  id, email, password, name
+  role (USER/ADMIN), created_at
+
+refresh_tokens
+  id, user_id, token_hash
+  expires_at, is_revoked</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎭 Event Service — MySQL</div>
+      <div class="arch-box" style="font-size:11px">events
+  id, title, venue, event_date
+  status (UPCOMING/ON_SALE/SOLD_OUT/ENDED)
+
+seat_grades
+  id, event_id, grade_name, price, color_code
+
+seats
+  id, event_id, seat_grade_id, row_name, seat_number
+  status (AVAILABLE/HELD/SOLD), version ← Optimistic Lock</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎟️ Reservation Service — MySQL</div>
+      <div class="arch-box" style="font-size:11px">reservations
+  id, user_id, seat_id, event_id
+  status (PENDING/CONFIRMED/CANCELLED/EXPIRED)
+  expires_at, created_at, updated_at</div>
+    </div>
+    <div class="card">
+      <div class="card-title">💳 Payment Service — MySQL</div>
+      <div class="arch-box" style="font-size:11px">payments
+  id, reservation_id, user_id, amount
+  status (PENDING/COMPLETED/FAILED/REFUNDED)
+  failure_reason, paid_at, created_at</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:0">
+    <div class="card-title">🔔 Notification Service — MongoDB</div>
+    <div class="arch-box" style="font-size:11px">{ "_id": "ObjectId", "userId": "Long",
+  "type": "PAYMENT_COMPLETED | PAYMENT_FAILED | RESERVATION_EXPIRED",
+  "title": "String", "body": "String",
+  "status": "SENT | FAILED", "sentAt": "ISODate" }</div>
+  </div>
+</section>
+
+<!-- ══ REDIS ══ -->
+<section id="redis" class="section">
+  <div class="page-header">
+    <h1>Redis 설계</h1>
+    <p>분산락, TTL, 대기열, 캐시, 블랙리스트</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗝️ Key 설계</div>
+    <table>
+      <tr><th>Key 패턴</th><th>타입</th><th>TTL</th><th>용도</th></tr>
+      <tr><td><code>seat:lock:{seatId}</code></td><td>String</td><td>30s</td><td>Redisson 분산락</td></tr>
+      <tr><td><code>reservation:temp:{reservationId}</code></td><td>Hash</td><td>300s</td><td>임시 예약 정보</td></tr>
+      <tr><td><code>event:seats:{eventId}</code></td><td>Hash</td><td>60s</td><td>좌석 상태 조회 캐시</td></tr>
+      <tr><td><code>queue:{eventId}</code></td><td>Sorted Set</td><td>-</td><td>대기열 (score=timestamp)</td></tr>
+      <tr><td><code>queue:size:{eventId}</code></td><td>String</td><td>-</td><td>대기열 길이 캐시</td></tr>
+      <tr><td><code>blacklist:jwt:{jti}</code></td><td>String</td><td>AccessToken 만료</td><td>로그아웃 토큰</td></tr>
+      <tr><td><code>ratelimit:{ip}</code></td><td>String</td><td>1s</td><td>Gateway Rate Limit</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ MQ ══ -->
+<section id="mq" class="section">
+  <div class="page-header">
+    <h1>RabbitMQ 설계</h1>
+    <p>비동기 이벤트 처리 + Dead Letter Queue 재시도</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📡 Exchange / Queue / Binding</div>
+    <div class="arch-box"><span class="hi-yellow">payment.exchange (topic)</span>
+  ├── routing_key: <span class="hi-green">payment.completed</span>
+  │     └── payment.completed.queue
+  │           ├── consumer: <span class="hi-blue">Reservation Service</span> (예약 확정)
+  │           └── consumer: <span class="hi-cyan">Notification Service</span> (확정 메일)
+  ├── routing_key: <span class="hi-red">payment.failed</span>
+  │     └── payment.failed.queue
+  │           ├── consumer: <span class="hi-blue">Reservation Service</span> (좌석 회수)
+  │           └── consumer: <span class="hi-cyan">Notification Service</span> (실패 알림)
+  └── DLX 설정 (3회 재시도 후 Dead Letter)
+        └── payment.dlq
+
+<span class="hi-yellow">seat.exchange (topic)</span>
+  └── routing_key: seat.released
+        └── seat.released.queue
+              └── consumer: <span class="hi-green">Event Service</span>
+                    (좌석 상태 AVAILABLE 변경 + SSE 발행)</div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔁 DLQ 설정</div>
+    <table>
+      <tr><th>설정</th><th>값</th><th>의미</th></tr>
+      <tr><td><code>x-dead-letter-exchange</code></td><td>payment.dlx</td><td>실패 메시지 이동 대상</td></tr>
+      <tr><td><code>x-message-ttl</code></td><td>10000ms</td><td>재시도 간격</td></tr>
+      <tr><td><code>x-max-retries</code></td><td>3</td><td>최대 재시도 횟수</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ CICD ══ -->
+<section id="cicd" class="section">
+  <div class="page-header">
+    <h1>CI/CD — Jenkins</h1>
+    <p>GitHub 연동 Multibranch Pipeline — 변경된 서비스만 빌드</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌿 브랜치 전략</div>
+    <table>
+      <tr><th>브랜치</th><th>이벤트</th><th>파이프라인 동작</th></tr>
+      <tr><td><code>feature/**</code></td><td>PR open/push</td><td>Build + Test + SonarQube</td></tr>
+      <tr><td><code>develop</code></td><td>push</td><td>Build + Test + Docker Build + Staging 배포</td></tr>
+      <tr><td><code>main</code></td><td>push (tag)</td><td>Build + Test + Docker Push + Prod 배포 (수동 승인)</td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">⚡ 파이프라인 스텝</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">📥</div>Checkout
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">🔨</div>Build & Test
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">🔬</div>Integration<br>Test
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">📊</div>SonarQube<br>60%
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">🐳</div>Docker<br>Build/Push
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">🚀</div>Deploy
+      </div>
+      <div style="color:#64748b">→</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;text-align:center">
+        <div style="font-size:18px">💬</div>Slack<br>알림
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🔑 Jenkins Credentials</div>
+    <table>
+      <tr><th>ID</th><th>용도</th></tr>
+      <tr><td><code>github-token</code></td><td>GitHub Webhook 연동</td></tr>
+      <tr><td><code>dockerhub-credentials</code></td><td>Docker Hub 이미지 푸시</td></tr>
+      <tr><td><code>sonarqube-token</code></td><td>SonarQube 코드 분석</td></tr>
+      <tr><td><code>slack-token</code></td><td>빌드 결과 알림</td></tr>
+      <tr><td><code>staging-server-ssh</code></td><td>스테이징 서버 배포</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ══ TEST ══ -->
+<section id="test" class="section">
+  <div class="page-header">
+    <h1>테스트 전략</h1>
+    <p>서비스 성격에 따른 단위/통합 테스트 분류</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 서비스별 테스트 전략</div>
+    <table>
+      <tr><th>서비스</th><th>전략</th><th>도구</th><th>근거</th></tr>
+      <tr>
+        <td>User Service</td>
+        <td><span class="tag" style="background:rgba(0,212,170,.15);color:#00d4aa;font-size:11px">단위 테스트</span></td>
+        <td><code>JUnit5 + Mockito</code></td>
+        <td>JWT 발급/검증, 비밀번호 인코딩이 순수 로직</td>
+      </tr>
+      <tr>
+        <td>Event Service</td>
+        <td><span class="tag" style="background:rgba(248,113,113,.15);color:#f87171;font-size:11px">통합 테스트</span></td>
+        <td><code>Testcontainers</code></td>
+        <td>Redis 캐시 + JPA 쿼리 + SSE Emitter가 인프라와 강결합</td>
+      </tr>
+      <tr>
+        <td>Reservation Service</td>
+        <td><span class="tag" style="background:rgba(248,113,113,.15);color:#f87171;font-size:11px">통합 테스트</span></td>
+        <td><code>Testcontainers</code></td>
+        <td>분산락 + Redis TTL + DB 트랜잭션 — 실제 인프라로만 검증</td>
+      </tr>
+      <tr>
+        <td>Payment Service</td>
+        <td><span class="tag" style="background:rgba(0,212,170,.15);color:#00d4aa;font-size:11px">단위 테스트</span></td>
+        <td><code>JUnit5 + Mockito</code></td>
+        <td>목업 PG, MQ Publisher MockBean으로 충분</td>
+      </tr>
+      <tr>
+        <td>Notification Service</td>
+        <td><span class="tag" style="background:rgba(0,212,170,.15);color:#00d4aa;font-size:11px">단위 테스트</span></td>
+        <td><code>JUnit5 + Mockito</code></td>
+        <td>MQ Consumer 로직 + 이메일 Mock으로 충분</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🎯 SonarQube 품질 게이트</div>
+    <ul class="checklist" style="pointer-events:none">
+      <li><div class="check-box checked"></div><span>라인 커버리지 <strong>60% 이상</strong></span></li>
+      <li><div class="check-box checked"></div><span>신규 코드 버그 <strong>0</strong></span></li>
+      <li><div class="check-box checked"></div><span>보안 취약점 <strong>0</strong></span></li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">🧪 핵심 통합 테스트 시나리오</div>
+    <ul class="checklist" style="pointer-events:none">
+      <li><div class="check-box checked"></div><span>동시에 동일 좌석 선점 요청 100개 → 1건만 성공</span></li>
+      <li><div class="check-box checked"></div><span>5분 후 Redis TTL 만료 → Scheduler 회수 확인</span></li>
+      <li><div class="check-box checked"></div><span>결제 실패 → DLQ 3회 재시도 → 최종 실패 → 좌석 회수</span></li>
+      <li><div class="check-box checked"></div><span>좌석 상태 변경 → SSE 클라이언트 실시간 수신 확인</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══ PLAN ══ -->
+<section id="plan" class="section">
+  <div class="page-header">
+    <h1>구현 계획</h1>
+    <p>Phase 0~10 — 총 17일 예상. 항목 클릭으로 진행 상황을 체크하세요.</p>
+  </div>
+
+  <div id="progress-summary" class="card" style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:13px;color:#94a3b8">전체 진행률</span>
+      <span id="progress-text" style="font-size:13px;font-weight:600;color:#6c63ff">0 / 0</span>
+    </div>
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="timeline" id="phases">
+
+    <!-- Phase 0 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-0"></div>
+      <div class="phase-header" onclick="togglePhase(0)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(108,99,255,.2);color:#a78bfa">0</div>
+          <div>
+            <div class="phase-title">인프라 기반 셋업</div>
+            <div class="phase-meta">Docker Compose · Eureka · Config Server · Gradle 멀티모듈</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-0">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">docker-compose.yml 작성 (MySQL×5, Redis, RabbitMQ, Zipkin, Eureka, Config, Jenkins, SonarQube)</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">settings.gradle · 루트 build.gradle 멀티모듈 설정</span><span class="sub-tag" style="background:rgba(108,99,255,.15);color:#a78bfa">필수</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">config-repo/ 생성 — 서비스별 application.yml 초안</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Eureka Server 구현 (@EnableEurekaServer)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Config Server 구현 (@EnableConfigServer, Git 연동)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: docker-compose up 후 Eureka 대시보드 :8761 접근 가능
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-1"></div>
+      <div class="phase-header" onclick="togglePhase(1)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(0,212,170,.2);color:#00d4aa">1</div>
+          <div>
+            <div class="phase-title">Common 모듈</div>
+            <div class="phase-meta">ticketch-common · ticketch-events · ticketch-security</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-1">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ticketch-common — ApiResponse, ErrorResponse, BusinessException, ErrorCode Enum</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ticketch-common — GlobalExceptionHandler (Spring MVC 공통 제공)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ticketch-events — PaymentCompletedEvent, PaymentFailedEvent</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ticketch-events — SeatHeldEvent, SeatReleasedEvent, NotificationRequestEvent</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ticketch-security — JwtTokenProvider (생성/파싱/검증), JwtProperties, UserPrincipal</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: ./gradlew :common:ticketch-common:build 성공
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-2"></div>
+      <div class="phase-header" onclick="togglePhase(2)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(250,204,21,.2);color:#fbbf24">2</div>
+          <div>
+            <div class="phase-title">User Service</div>
+            <div class="phase-meta">회원가입 · 로그인 · JWT 발급 · 단위 테스트</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">2일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-2">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">헥사고날 패키지 구조 셋업 (domain/application/adapter)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — User, RefreshToken 모델</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — RegisterUserUseCase, LoginUseCase Port 정의</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — RegisterUserService, AuthService 구현</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — AuthController, UserController</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — UserPersistenceAdapter (JPA)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — TokenRedisAdapter (RefreshToken 저장, 블랙리스트)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Flyway 마이그레이션 SQL (V1__create_users.sql)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — AuthService, RegisterUserService (Mockito)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 로그인 → AccessToken 반환 → /api/users/me 호출 성공
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-3"></div>
+      <div class="phase-header" onclick="togglePhase(3)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(52,211,153,.2);color:#34d399">3</div>
+          <div>
+            <div class="phase-title">Event Service</div>
+            <div class="phase-meta">공연 조회 · 실시간 좌석 SSE · Redis 캐시 · 통합 테스트</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">2일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-3">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Event, SeatGrade, Seat, SeatStatusService</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — EventQueryService, SeatManagementService</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In — EventController, SeatController</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In — SeatSseController (SSE endpoint)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — SseEmitterAdapter (Emitter 풀 관리)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — SeatCacheRedisAdapter (좌석 상태 캐시)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — SeatReleaseConsumer (MQ Consumer)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Flyway 마이그레이션 SQL</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">통합 테스트 — Testcontainers (MySQL + Redis)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 좌석 상태 변경 → SSE 클라이언트 실시간 수신 확인
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-4"></div>
+      <div class="phase-header" onclick="togglePhase(4)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(248,113,113,.2);color:#f87171">4</div>
+          <div>
+            <div class="phase-title">Reservation Service ⚡</div>
+            <div class="phase-meta">분산락 · TTL 자동 회수 · 대기열 · 통합 테스트</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">3일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-4">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Redisson Config (RedissonClient Bean 설정)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Reservation, QueueEntry, ReservationDomainService</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — HoldSeatService (락 획득 → TTL 저장 → DB 저장)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — ReservationConfirmService (MQ 수신 후 확정)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — QueueService (Sorted Set 진입/조회/팝)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — RedissonLockAdapter (분산락)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — ReservationCacheAdapter (Redis TTL)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — PaymentEventConsumer (completed/failed)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out Messaging — SeatReleasedPublisher</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out External — EventServiceClient (Feign)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Circuit Breaker 설정 (Feign → Event Service Fallback)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ExpiredReservationScheduler (5분 만료 보조 배치)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">통합 테스트 — 동시 선점 시나리오 (멀티스레드)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 동시 100개 요청 시 1건만 성공 · 5분 후 자동 회수 확인
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-5"></div>
+      <div class="phase-header" onclick="togglePhase(5)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(96,165,250,.2);color:#60a5fa">5</div>
+          <div>
+            <div class="phase-title">Payment Service</div>
+            <div class="phase-meta">목업 결제 · RabbitMQ 이벤트 발행 · 단위 테스트</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-5">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">RabbitMQ Config (Exchange, Queue, DLQ, Binding 선언)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Payment, MockPaymentProcessor (90% 성공 시뮬레이션)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — PaymentService (요청 → 목업 → 이벤트 발행)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — PaymentController</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — MockPgAdapter</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — PaymentEventPublisher (MQ 발행)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out External — ReservationServiceClient (Feign)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — 성공/실패 분기 로직</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 결제 요청 → MQ 발행 → Reservation Service 수신 후 상태 변경
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-6"></div>
+      <div class="phase-header" onclick="togglePhase(6)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(192,132,252,.2);color:#c084fc">6</div>
+          <div>
+            <div class="phase-title">Notification Service</div>
+            <div class="phase-meta">MQ Consumer · 목업 이메일 · MongoDB 이력 · 단위 테스트</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-6">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Notification, NotificationFactory</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — NotificationService</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — PaymentNotificationConsumer</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — MockEmailAdapter (콘솔 출력)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — NotificationMongoAdapter (발송 이력)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — Consumer 로직, 이벤트 타입별 알림 내용</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 결제 완료 이벤트 → 콘솔 이메일 출력 + MongoDB 저장
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 7 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-7"></div>
+      <div class="phase-header" onclick="togglePhase(7)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(251,191,36,.2);color:#fbbf24">7</div>
+          <div>
+            <div class="phase-title">API Gateway</div>
+            <div class="phase-meta">라우팅 · JWT 필터 · Rate Limiting · CORS</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-7">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">RouteConfig — 서비스별 라우팅 규칙 (lb://service-name)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">JwtAuthenticationFilter — 토큰 검증 → X-User-Id Header 주입</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">RateLimitFilter — Redis 기반 IP Rate Limit</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">GatewayExceptionHandler — 인증 오류 응답 포맷</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">CORS 설정 (React 개발 서버 허용)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: Gateway 통해 전체 플로우 end-to-end 동작
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 8 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-8"></div>
+      <div class="phase-header" onclick="togglePhase(8)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(74,222,128,.2);color:#4ade80">8</div>
+          <div>
+            <div class="phase-title">Jenkins CI/CD</div>
+            <div class="phase-meta">GitHub Webhook · Multibranch Pipeline · Docker · SonarQube</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-8">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Jenkins Docker 컨테이너 구성 (Docker-in-Docker)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">각 서비스 Dockerfile 작성 (multi-stage build)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">jenkins/Jenkinsfile.root — 변경 서비스 감지 + 병렬 트리거</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">각 서비스 Jenkinsfile — Build/Test/SonarQube/Docker/Deploy</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">deploy/docker-compose.staging.yml · deploy-staging.sh</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Jenkins Credentials 등록 (GitHub, DockerHub, SonarQube, Slack)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">GitHub Webhook 설정 (Payload URL, Push/PR Events)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">SonarQube Quality Gate 설정 (커버리지 60%)</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: develop push → 자동 빌드 → Staging 배포 → Slack 알림
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 9 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-9"></div>
+      <div class="phase-header" onclick="togglePhase(9)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(56,189,248,.2);color:#38bdf8">9</div>
+          <div>
+            <div class="phase-title">Frontend</div>
+            <div class="phase-meta">React · 좌석 맵 · SSE · 결제 타이머 · 대기열</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">3일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-9">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">프로젝트 셋업 (Vite + React + TypeScript + Tailwind)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">인증 — 로그인/회원가입 페이지, Axios 인터셉터</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">공연 목록/상세 페이지</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">SeatMap.tsx — SVG 좌석 배치도</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">useSeatSSE.ts — SSE 연결 훅 (실시간 좌석 상태)</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">결제 페이지 — 5분 카운트다운 타이머</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">QueueWaiting.tsx — 대기열 순번 Polling</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">내 예매 목록 페이지</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 좌석 선택 → 임시 선점 → 결제 → 확정 전체 플로우
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 10 -->
+    <div class="phase-item">
+      <div class="phase-dot" id="dot-10"></div>
+      <div class="phase-header" onclick="togglePhase(10)">
+        <div class="phase-left">
+          <div class="phase-num" style="background:rgba(255,107,107,.2);color:#ff6b6b">10</div>
+          <div>
+            <div class="phase-title">통합 테스트 & 정리</div>
+            <div class="phase-meta">E2E 시나리오 · Zipkin 추적 · README</div>
+          </div>
+        </div>
+        <div class="phase-right">
+          <div class="phase-days">1일</div>
+          <div class="chevron">▼</div>
+        </div>
+      </div>
+      <div class="phase-body" id="body-10">
+        <ul class="checklist">
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">E2E 시나리오 — 동시 선점 → 1건 성공</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">E2E 시나리오 — 5분 타임아웃 → 자동 회수 → 재선점 가능</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">E2E 시나리오 — 결제 실패 DLQ 3회 재시도 → 좌석 회수</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Zipkin 대시보드 — 서비스 간 TraceId 추적 확인</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Swagger UI 각 서비스별 API 문서 확인</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">README.md — 아키텍처 다이어그램, 실행 방법, 기술 설명</span></li>
+          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">.env.example 환경변수 정리</span></li>
+        </ul>
+        <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
+          ✅ 완료 기준: 전체 플로우 정상 동작 + Zipkin TraceId 추적 확인
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phases -->
+</section>
+
+</main>
+</div><!-- /layout -->
+
+<script>
+  // ── Navigation ──
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  // ── Phase accordion ──
+  function togglePhase(n) {
+    const header = document.querySelector(`#body-${n}`).previousElementSibling;
+    const body   = document.getElementById(`body-${n}`);
+    header.classList.toggle('open');
+    body.classList.toggle('show');
+  }
+
+  // ── Checklist ──
+  function toggleCheck(box) {
+    box.classList.toggle('checked');
+    const text = box.nextElementSibling;
+    text.classList.toggle('checked-text');
+    updateProgress();
+    saveToPersist();
+  }
+
+  function updateProgress() {
+    const all     = document.querySelectorAll('.check-box');
+    const checked = document.querySelectorAll('.check-box.checked');
+    const pct = all.length ? Math.round(checked.length / all.length * 100) : 0;
+    document.getElementById('progress-text').textContent = `${checked.length} / ${all.length}`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    // Phase dots
+    for (let i = 0; i <= 10; i++) {
+      const bodyEl = document.getElementById(`body-${i}`);
+      if (!bodyEl) continue;
+      const phaseBoxes   = bodyEl.querySelectorAll('.check-box');
+      const phaseChecked = bodyEl.querySelectorAll('.check-box.checked');
+      const dot = document.getElementById(`dot-${i}`);
+      if (dot && phaseBoxes.length > 0 && phaseChecked.length === phaseBoxes.length)
+        dot.classList.add('active-phase');
+      else if (dot)
+        dot.classList.remove('active-phase');
+    }
+  }
+
+  // ── Persist to localStorage ──
+  function saveToPersist() {
+    const boxes = document.querySelectorAll('.check-box');
+    const state = Array.from(boxes).map(b => b.classList.contains('checked'));
+    localStorage.setItem('ticketch-plan-checks', JSON.stringify(state));
+  }
+
+  function loadFromPersist() {
+    const saved = localStorage.getItem('ticketch-plan-checks');
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    const boxes = document.querySelectorAll('.check-box');
+    boxes.forEach((box, i) => {
+      if (state[i]) {
+        box.classList.add('checked');
+        const text = box.nextElementSibling;
+        if (text) text.classList.add('checked-text');
+      }
+    });
+    updateProgress();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadFromPersist();
+    updateProgress();
+  });
+</script>
+</body>
+</html>
