@@ -1,0 +1,11 @@
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ticketch_notification_test
+eureka:
+  client:
+    enabled: false
