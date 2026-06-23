@@ -24,8 +24,9 @@
 ## 현재 진행 상태
 - ✅ Phase 0: 인프라 (eureka-server, config-server) / Phase 1: common 모듈
 - ✅ Phase 2: User Service (JWT 인증) / Phase 3: Event Service (좌석 SSE)
-- 🔜 Phase 4: Reservation Service ← **현재 작업** (분산락·TTL·대기열, 핵심 복잡도)
-- ⬜ Phase 5~10: Payment / Notification / Gateway / Jenkins / Frontend / 통합
+- ✅ Phase 4: Reservation Service (분산락·TTL·대기열, 동시 선점 통합테스트 통과)
+- 🔜 Phase 5: Payment Service ← **현재 작업** (목업 결제, RabbitMQ 이벤트 발행, 단위 테스트)
+- ⬜ Phase 6~10: Notification / Gateway / Jenkins / Frontend / 통합
 
 ## 단일 진실 공급원
 - 전체 스펙: `doc/SPEC.md` (서비스별 상세 설계·데이터 모델·Redis/MQ 설계)
