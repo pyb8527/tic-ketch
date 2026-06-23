@@ -1517,15 +1517,15 @@ seats
       </div>
       <div class="phase-body" id="body-6">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Notification, NotificationFactory</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — NotificationService</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — PaymentNotificationConsumer</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — MockEmailAdapter (콘솔 출력)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — NotificationMongoAdapter (발송 이력)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — Consumer 로직, 이벤트 타입별 알림 내용</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Domain — Notification, NotificationFactory</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — NotificationService</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter In Messaging — PaymentNotificationConsumer</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — MockEmailAdapter (콘솔 출력)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — NotificationMongoAdapter (발송 이력)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">단위 테스트 — NotificationService(SENT/FAILED) + Factory (4건 통과)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
-          ✅ 완료 기준: 결제 완료 이벤트 → 콘솔 이메일 출력 + MongoDB 저장
+          ✅ 완료 — 단위 테스트 4건 통과: 발송 성공→SENT / 실패→FAILED 저장, 타입별 알림 생성. payment.*.notification.queue로 Payment 연동
         </div>
       </div>
     </div>
