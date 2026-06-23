@@ -1,0 +1,13 @@
+.git
+.gitignore
+**/build
+**/.gradle
+.gradle
+.idea
+*.iml
+.qe
+doc
+config-repo
+*.ps1
+*.md
+.claude

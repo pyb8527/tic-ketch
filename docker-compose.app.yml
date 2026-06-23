@@ -1,0 +1,157 @@
+# ── Spring MSA 서비스 (인프라 compose와 함께 실행) ─────────────────
+#   실행: docker compose -f docker-compose.yml -f docker-compose.app.yml up -d --build
+#   (또는 .\run-docker.ps1)
+#
+# 컨테이너 내부에서는 localhost 대신 compose 서비스명으로 통신하므로
+# SPRING_PROFILES_ACTIVE=docker 로 config-repo의 *-docker.yml 을 적용한다.
+
+x-spring-env: &spring-env
+  SPRING_PROFILES_ACTIVE: docker
+  SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+
+services:
+
+  # ── 서비스 디스커버리 ──────────────────────────────────────────
+  eureka-server:
+    build:
+      context: .
+      args:
+        GRADLE_MODULE: ":infrastructure:eureka-server"
+        MODULE_DIR: "infrastructure/eureka-server"
+    container_name: ticketch-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── 설정 중앙화 (config-repo 마운트) ──────────────────────────
+  config-server:
+    build:
+      context: .
+      args:
+        GRADLE_MODULE: ":infrastructure:config-server"
+        MODULE_DIR: "infrastructure/config-server"
+    container_name: ticketch-config
+    environment:
+      CONFIG_REPO_PATH: /config-repo
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    volumes:
+      - ./config-repo:/config-repo:ro
+    ports:
+      - "8888:8888"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - ticketch-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/application/default"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  # ── 비즈니스 서비스 ────────────────────────────────────────────
+  user-service:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":services:user-service", MODULE_DIR: "services/user-service" }
+    container_name: ticketch-user
+    environment: *spring-env
+    ports:
+      - "8081:8081"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      mysql-user: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks:
+      - ticketch-net
+
+  event-service:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":services:event-service", MODULE_DIR: "services/event-service" }
+    container_name: ticketch-event
+    environment: *spring-env
+    ports:
+      - "8082:8082"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      mysql-event: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks:
+      - ticketch-net
+
+  reservation-service:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":services:reservation-service", MODULE_DIR: "services/reservation-service" }
+    container_name: ticketch-reservation
+    environment: *spring-env
+    ports:
+      - "8083:8083"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      mysql-reservation: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks:
+      - ticketch-net
+
+  payment-service:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":services:payment-service", MODULE_DIR: "services/payment-service" }
+    container_name: ticketch-payment
+    environment: *spring-env
+    ports:
+      - "8084:8084"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      mysql-payment: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    networks:
+      - ticketch-net
+
+  notification-service:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":services:notification-service", MODULE_DIR: "services/notification-service" }
+    container_name: ticketch-notification
+    environment: *spring-env
+    ports:
+      - "8085:8085"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      mongodb: { condition: service_started }
+      rabbitmq: { condition: service_healthy }
+    networks:
+      - ticketch-net
+
+  # ── API Gateway (프론트 진입점) ───────────────────────────────
+  api-gateway:
+    build:
+      context: .
+      args: { GRADLE_MODULE: ":infrastructure:api-gateway", MODULE_DIR: "infrastructure/api-gateway" }
+    container_name: ticketch-gateway
+    environment:
+      <<: *spring-env
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    depends_on:
+      config-server: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks:
+      - ticketch-net
