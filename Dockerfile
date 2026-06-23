@@ -16,8 +16,9 @@ COPY services ./services
 ARG GRADLE_MODULE
 ARG MODULE_DIR
 # Gradle 캐시를 BuildKit 캐시 마운트로 공유 → 여러 서비스 빌드 시 의존성 재다운로드 방지
+# gradlew가 Windows(CRLF) 체크아웃이면 shebang이 깨지므로 CR 제거 후 실행
 RUN --mount=type=cache,target=/root/.gradle \
-    chmod +x gradlew && \
+    sed -i 's/\r$//' gradlew && chmod +x gradlew && \
     ./gradlew ${GRADLE_MODULE}:bootJar -x test --no-daemon
 # 실행 가능한 bootJar만 선택 (-plain.jar 제외)
 RUN cp "$(find ${MODULE_DIR}/build/libs -name '*.jar' ! -name '*-plain.jar' | head -n1)" /workspace/app.jar
