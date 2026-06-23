@@ -22,12 +22,25 @@ public class RabbitMQConfig {
     public static final String SEAT_EXCHANGE     = "seat.exchange";
     public static final String SEAT_RELEASED_KEY = "seat.released";
     public static final String SEAT_RELEASED_Q   = "seat.released.queue";
+    public static final String SEAT_HELD_KEY     = "seat.held";
+    public static final String SEAT_HELD_Q       = "seat.held.queue";
+
+    // 결제 완료 시 좌석을 SOLD로 변경하기 위해 payment.exchange도 구독한다.
+    public static final String PAYMENT_EXCHANGE      = "payment.exchange";
+    public static final String PAYMENT_COMPLETED_KEY = "payment.completed";
+    public static final String PAYMENT_COMPLETED_Q   = "payment.completed.event.queue";
 
     @Bean
     public TopicExchange seatExchange() {
         return new TopicExchange(SEAT_EXCHANGE);
     }
 
+    @Bean
+    public TopicExchange paymentExchange() {
+        return new TopicExchange(PAYMENT_EXCHANGE);
+    }
+
+    // ── seat.released → AVAILABLE ──────────────────────────────
     @Bean
     public Queue seatReleasedQueue() {
         return QueueBuilder.durable(SEAT_RELEASED_Q).build();
@@ -38,7 +51,29 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(seatReleasedQueue()).to(seatExchange()).with(SEAT_RELEASED_KEY);
     }
 
-    /** JSON 직렬화 — SeatReleasedEvent 역직렬화 */
+    // ── seat.held → HELD ───────────────────────────────────────
+    @Bean
+    public Queue seatHeldQueue() {
+        return QueueBuilder.durable(SEAT_HELD_Q).build();
+    }
+
+    @Bean
+    public Binding seatHeldBinding() {
+        return BindingBuilder.bind(seatHeldQueue()).to(seatExchange()).with(SEAT_HELD_KEY);
+    }
+
+    // ── payment.completed → SOLD ───────────────────────────────
+    @Bean
+    public Queue paymentCompletedEventQueue() {
+        return QueueBuilder.durable(PAYMENT_COMPLETED_Q).build();
+    }
+
+    @Bean
+    public Binding paymentCompletedEventBinding() {
+        return BindingBuilder.bind(paymentCompletedEventQueue()).to(paymentExchange()).with(PAYMENT_COMPLETED_KEY);
+    }
+
+    /** JSON 직렬화 — Seat / Payment 이벤트 역직렬화 */
     @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
