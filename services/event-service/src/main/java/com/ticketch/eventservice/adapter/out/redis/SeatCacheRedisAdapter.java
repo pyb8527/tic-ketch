@@ -48,15 +48,22 @@ public class SeatCacheRedisAdapter implements CacheSeatStatusPort {
         String key = SEAT_CACHE_KEY + eventId;
 
         // 모든 좌석을 Hash로 한 번에 저장 (O(n) 단일 명령)
+        // 값에 좌석 전체 정보를 인코딩: seatGradeId|rowName|seatNumber|status
+        // (status만 저장하면 목록 조회 시 등급/열/번호가 유실되므로 전체 보존)
         Map<String, String> seatMap = seats.stream()
                 .collect(Collectors.toMap(
                         s -> String.valueOf(s.getId()),
-                        s -> s.getStatus().name()
+                        SeatCacheRedisAdapter::encode
                 ));
 
         redisTemplate.opsForHash().putAll(key, seatMap);
         redisTemplate.expire(key, TTL);
         log.debug("좌석 캐시 저장 eventId={}, count={}", eventId, seats.size());
+    }
+
+    /** 좌석 → 캐시 값 인코딩: {seatGradeId}|{rowName}|{seatNumber}|{status} */
+    private static String encode(Seat s) {
+        return s.getSeatGradeId() + "|" + s.getRowName() + "|" + s.getSeatNumber() + "|" + s.getStatus().name();
     }
 
     /** Redis Hash에서 공연 좌석 목록 조회 */
@@ -70,13 +77,19 @@ public class SeatCacheRedisAdapter implements CacheSeatStatusPort {
             return Optional.empty();
         }
 
-        // Redis Hash 값 → Seat 도메인 객체 변환 (id, status만 복원)
+        // Redis Hash 값 → Seat 도메인 객체 변환 (seatGradeId|rowName|seatNumber|status 복원)
         List<Seat> seats = entries.entrySet().stream()
-                .map(e -> Seat.builder()
-                        .id(Long.parseLong((String) e.getKey()))
-                        .status(Seat.SeatStatus.valueOf((String) e.getValue()))
-                        .eventId(eventId)
-                        .build())
+                .map(e -> {
+                    String[] p = ((String) e.getValue()).split("\\|", -1);
+                    return Seat.builder()
+                            .id(Long.parseLong((String) e.getKey()))
+                            .eventId(eventId)
+                            .seatGradeId(Long.parseLong(p[0]))
+                            .rowName(p[1])
+                            .seatNumber(Integer.parseInt(p[2]))
+                            .status(Seat.SeatStatus.valueOf(p[3]))
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         log.debug("좌석 캐시 히트 eventId={}, count={}", eventId, seats.size());
@@ -90,8 +103,13 @@ public class SeatCacheRedisAdapter implements CacheSeatStatusPort {
     @Override
     public void updateSeatStatus(Long eventId, Long seatId, Seat.SeatStatus newStatus) {
         String key = SEAT_CACHE_KEY + eventId;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForHash().put(key, String.valueOf(seatId), newStatus.name());
+        String field = String.valueOf(seatId);
+        Object existing = redisTemplate.opsForHash().get(key, field);
+        if (existing != null) {
+            // 기존 인코딩 값의 status 세그먼트만 교체 (등급/열/번호 보존)
+            String[] p = ((String) existing).split("\\|", -1);
+            p[3] = newStatus.name();
+            redisTemplate.opsForHash().put(key, field, String.join("|", p));
             log.debug("좌석 캐시 부분 갱신 eventId={}, seatId={}, status={}", eventId, seatId, newStatus);
         }
     }
