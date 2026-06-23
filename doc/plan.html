@@ -1612,17 +1612,17 @@ seats
       </div>
       <div class="phase-body" id="body-9">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">프로젝트 셋업 (Vite + React + TypeScript + Tailwind)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">인증 — 로그인/회원가입 페이지, Axios 인터셉터</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">공연 목록/상세 페이지</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">SeatMap.tsx — SVG 좌석 배치도</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">useSeatSSE.ts — SSE 연결 훅 (실시간 좌석 상태)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">결제 페이지 — 5분 카운트다운 타이머</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">QueueWaiting.tsx — 대기열 순번 Polling</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">내 예매 목록 페이지</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">프로젝트 셋업 (Vite + React + TypeScript + Tailwind) — 별도 저장소</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">인증 — 로그인/회원가입 페이지, Axios 인터셉터(Bearer)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">공연 목록/상세 페이지 (React Query)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">SeatMap.tsx — 좌석 배치도 (상태별 색)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">useSeatSSE.ts — SSE 연결 훅 (실시간 좌석 상태)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">결제 페이지 — 5분 카운트다운 타이머</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">QueuePage.tsx — 대기열 순번 Polling</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">내 예매 목록 페이지 (취소 기능)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
-          ✅ 완료 기준: 좌석 선택 → 임시 선점 → 결제 → 확정 전체 플로우
+          ✅ 완료 — 별도 저장소 <code>tic-ketch-front</code>, npm run build(tsc+vite) 통과. 로그인→공연→좌석(SSE)→선점→결제(타이머) 플로우 UI 구현
         </div>
       </div>
     </div>

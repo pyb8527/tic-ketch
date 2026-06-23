@@ -27,8 +27,17 @@
 - ✅ Phase 4: Reservation Service (분산락·TTL·대기열, 동시 선점 통합테스트 통과)
 - ✅ Phase 5: Payment Service (목업 결제, RabbitMQ 이벤트 발행, 단위 테스트)
 - ✅ Phase 6: Notification Service (MQ 이벤트 수신 → 알림 발송 → MongoDB 이력)
-- 🔜 Phase 7: API Gateway ← **현재 작업** (리액티브 Gateway, JWT 검증→X-User-Id 주입, Rate Limit, CORS)
-- ⬜ Phase 8~10: Jenkins / Frontend / 통합
+- ✅ Phase 7: API Gateway (리액티브, JWT 검증→X-User-Id 주입, Rate Limit, CORS)
+- ⏸️ Phase 8: Jenkins CI/CD — **보류** (빌드 서버/배포 환경 미구축, 추후 진행)
+- 🔜 Phase 9: Frontend ← **현재 작업** (React/Vite/TS, 예매 플로우 UI, SSE 실시간 좌석)
+- ⬜ Phase 10: 통합 테스트 & 정리
+
+## 백엔드 API 요약 (Frontend 연동 기준, 모두 Gateway :8080 경유)
+- 응답 래퍼: `{ code, message, data }` (성공 code="SUCCESS")
+- Auth: `POST /api/auth/register{email,password,name}` → userId / `POST /api/auth/login{email,password}` → `{accessToken,refreshToken}` / `GET /api/users/me`
+- Event(공개): `GET /api/events`(Page) / `GET /api/events/{id}` → `{id,title,venue,eventDate,status}` / `GET /api/events/{id}/seats` → `{id,seatGradeId,rowName,seatNumber,status}[]` / `GET /api/events/{id}/seats/stream`(SSE: `connected`,`seat-status`)
+- Reservation(JWT): `POST /api/reservations{seatId,eventId}` → `{reservationId,expiresAt}` / `GET /api/reservations/{id}` → `{id,seatId,eventId,status,expiresAt,remainingSeconds}` / `GET /api/reservations/me` / `DELETE /api/reservations/{id}` / `POST /api/queue/{eventId}/enter` → `{position,totalWaiting}`
+- Payment(JWT): `POST /api/payments{reservationId,amount}` → `{paymentId,status}` / `GET /api/payments/{id}` / `POST /api/payments/{id}/cancel`
 
 ## 단일 진실 공급원
 - 전체 스펙: `doc/SPEC.md` (서비스별 상세 설계·데이터 모델·Redis/MQ 설계)
