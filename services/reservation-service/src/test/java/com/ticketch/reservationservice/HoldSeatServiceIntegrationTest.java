@@ -84,6 +84,11 @@ class HoldSeatServiceIntegrationTest {
         r.add("spring.jpa.hibernate.ddl-auto", () -> "none");
         r.add("spring.flyway.enabled",           () -> "true");
 
+        // application-test.yml은 H2 단위 테스트용으로 H2Dialect를 지정하지만,
+        // 이 통합 테스트는 실제 MySQL 컨테이너를 사용하므로 MySQL 방언으로 덮어쓴다.
+        // (H2 방언이면 `fetch first ... rows only` 구문을 생성해 MySQL이 거부한다)
+        r.add("spring.jpa.properties.hibernate.dialect", () -> "org.hibernate.dialect.MySQLDialect");
+
         // Redis
         r.add("spring.data.redis.host", redis::getHost);
         r.add("spring.data.redis.port", () -> redis.getMappedPort(6379).toString());

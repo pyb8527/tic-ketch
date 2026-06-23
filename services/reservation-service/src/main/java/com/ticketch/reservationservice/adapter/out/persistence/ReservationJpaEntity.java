@@ -60,8 +60,14 @@ public class ReservationJpaEntity {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    /** 예약 업데이트 시간 */
-    @Column
+    /**
+     * 예약 업데이트 시간.
+     *
+     * <p>DB가 {@code DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP}로 관리하므로
+     * INSERT/UPDATE 문에서 제외한다(insertable/updatable=false). 명시적 NULL 삽입으로 인한
+     * NOT NULL 제약 위반을 방지한다.
+     */
+    @Column(insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
     /**
