@@ -1484,17 +1484,17 @@ seats
       </div>
       <div class="phase-body" id="body-5">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">RabbitMQ Config (Exchange, Queue, DLQ, Binding 선언)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Payment, MockPaymentProcessor (90% 성공 시뮬레이션)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — PaymentService (요청 → 목업 → 이벤트 발행)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter — PaymentController</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — MockPgAdapter</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — PaymentEventPublisher (MQ 발행)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out External — ReservationServiceClient (Feign)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">단위 테스트 — 성공/실패 분기 로직</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">RabbitMQ Config (Exchange, Queue, DLQ, Binding 선언)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Domain — Payment, MockPaymentProcessor (90% 성공 시뮬레이션)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — PaymentService (요청 → 목업 → 이벤트 발행)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter — PaymentController</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — MockPgAdapter</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — PaymentEventPublisher (MQ 발행)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out External — ReservationServiceClient (Feign)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">단위 테스트 — 성공/실패/예약상태 분기 (3건 통과)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
-          ✅ 완료 기준: 결제 요청 → MQ 발행 → Reservation Service 수신 후 상태 변경
+          ✅ 완료 — 단위 테스트 3건 통과: 결제 성공→PaymentCompletedEvent / 실패→PaymentFailedEvent / 예약상태 검증. payment.exchange 발행으로 Reservation Consumer 연동
         </div>
       </div>
     </div>
