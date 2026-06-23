@@ -18,6 +18,8 @@ public class Event {
     private Long id;
     private String title;
     private String venue;
+    private String category;
+    private String posterUrl;
     private LocalDateTime eventDate;
     private EventStatus status;
     private LocalDateTime createdAt;

@@ -16,7 +16,7 @@ public interface CreateEventUseCase {
     /** 좌석 일괄 생성 후 생성된 좌석 수 반환 */
     int createSeats(Long eventId, List<CreateSeatCommand> seats);
 
-    record CreateEventCommand(String title, String venue, LocalDateTime eventDate) {}
+    record CreateEventCommand(String title, String venue, String category, String posterUrl, LocalDateTime eventDate) {}
 
     record CreateSeatCommand(Long seatGradeId, String rowName, Integer seatNumber) {}
 }

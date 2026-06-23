@@ -9,12 +9,15 @@ public record EventResponse(
         Long id,
         String title,
         String venue,
+        String category,
+        String posterUrl,
         LocalDateTime eventDate,
         String status
 ) {
     public static EventResponse from(Event event) {
         return new EventResponse(
                 event.getId(), event.getTitle(), event.getVenue(),
+                event.getCategory(), event.getPosterUrl(),
                 event.getEventDate(), event.getStatus().name()
         );
     }

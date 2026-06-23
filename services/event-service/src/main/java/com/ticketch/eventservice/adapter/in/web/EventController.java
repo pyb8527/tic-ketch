@@ -54,7 +54,7 @@ public class EventController {
     @PostMapping("/admin")
     public ResponseEntity<ApiResponse<Long>> createEvent(@RequestBody @Valid CreateEventRequest request) {
         Long eventId = createEventUseCase.createEvent(
-                new CreateEventUseCase.CreateEventCommand(request.title(), request.venue(), request.eventDate())
+                new CreateEventUseCase.CreateEventCommand(request.title(), request.venue(), request.category(), request.posterUrl(), request.eventDate())
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(eventId));
     }

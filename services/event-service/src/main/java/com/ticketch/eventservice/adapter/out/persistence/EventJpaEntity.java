@@ -31,6 +31,12 @@ public class EventJpaEntity {
     @Column(nullable = false)
     private String venue;
 
+    @Column(nullable = false, length = 30)
+    private String category;
+
+    @Column(length = 500)
+    private String posterUrl;
+
     @Column(nullable = false)
     private LocalDateTime eventDate;
 
@@ -43,12 +49,14 @@ public class EventJpaEntity {
 
     public Event toDomain() {
         return Event.builder().id(id).title(title).venue(venue)
+                .category(category).posterUrl(posterUrl)
                 .eventDate(eventDate).status(status).createdAt(createdAt).build();
     }
 
     public static EventJpaEntity fromDomain(Event event) {
         return EventJpaEntity.builder().id(event.getId()).title(event.getTitle())
-                .venue(event.getVenue()).eventDate(event.getEventDate())
+                .venue(event.getVenue()).category(event.getCategory()).posterUrl(event.getPosterUrl())
+                .eventDate(event.getEventDate())
                 .status(event.getStatus()).createdAt(event.getCreatedAt()).build();
     }
 }

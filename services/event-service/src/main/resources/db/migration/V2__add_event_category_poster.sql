@@ -1,0 +1,3 @@
+ALTER TABLE events
+    ADD COLUMN category   VARCHAR(30)  NOT NULL DEFAULT 'CONCERT' AFTER venue,
+    ADD COLUMN poster_url VARCHAR(500) NULL     AFTER category;

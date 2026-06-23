@@ -64,6 +64,8 @@ public class SeatManagementService implements UpdateSeatStatusUseCase, CreateEve
         Event event = Event.builder()
                 .title(command.title())
                 .venue(command.venue())
+                .category(command.category() != null ? command.category() : "CONCERT")
+                .posterUrl(command.posterUrl())
                 .eventDate(command.eventDate())
                 .status(Event.EventStatus.UPCOMING)
                 .createdAt(LocalDateTime.now())

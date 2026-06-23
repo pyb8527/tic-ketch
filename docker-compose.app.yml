@@ -8,6 +8,8 @@
 x-spring-env: &spring-env
   SPRING_PROFILES_ACTIVE: docker
   SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+  TZ: Asia/Seoul
+  JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
 
 services:
 
@@ -148,6 +150,8 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Seoul
     ports:
       - "8080:8080"
     restart: on-failure

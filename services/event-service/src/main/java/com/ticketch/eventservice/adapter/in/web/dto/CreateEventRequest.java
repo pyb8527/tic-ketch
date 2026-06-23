@@ -10,5 +10,7 @@ import java.time.LocalDateTime;
 public record CreateEventRequest(
         @NotBlank String title,
         @NotBlank String venue,
+        String category,
+        String posterUrl,
         @NotNull @Future LocalDateTime eventDate
 ) {}
