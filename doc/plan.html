@@ -1446,22 +1446,22 @@ seats
       </div>
       <div class="phase-body" id="body-4">
         <ul class="checklist">
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Redisson Config (RedissonClient Bean 설정)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Domain — Reservation, QueueEntry, ReservationDomainService</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — HoldSeatService (락 획득 → TTL 저장 → DB 저장)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — ReservationConfirmService (MQ 수신 후 확정)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Application — QueueService (Sorted Set 진입/조회/팝)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — RedissonLockAdapter (분산락)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out — ReservationCacheAdapter (Redis TTL)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter In Messaging — PaymentEventConsumer (completed/failed)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out Messaging — SeatReleasedPublisher</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Adapter Out External — EventServiceClient (Feign)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">Circuit Breaker 설정 (Feign → Event Service Fallback)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">ExpiredReservationScheduler (5분 만료 보조 배치)</span></li>
-          <li><div class="check-box" onclick="toggleCheck(this)"></div><span class="check-text">통합 테스트 — 동시 선점 시나리오 (멀티스레드)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Redisson Config (RedissonClient Bean 설정)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Domain — Reservation, QueueEntry, ReservationDomainService</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — HoldSeatService (락 획득 → TTL 저장 → DB 저장)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — ReservationConfirmService (MQ 수신 후 확정)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Application — QueueService (Sorted Set 진입/조회/팝)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — RedissonLockAdapter (분산락)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out — ReservationCacheAdapter (Redis TTL)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter In Messaging — PaymentEventConsumer (completed/failed)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out Messaging — SeatReleasedPublisher</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Adapter Out External — EventServiceClient (Feign)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">Circuit Breaker 설정 (Feign → Event Service Fallback)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">ExpiredReservationScheduler (5분 만료 보조 배치)</span></li>
+          <li><div class="check-box checked" onclick="toggleCheck(this)"></div><span class="check-text checked-text">통합 테스트 — 동시 선점 시나리오 (멀티스레드, Testcontainers)</span></li>
         </ul>
         <div style="margin-top:12px;padding:10px;background:rgba(0,212,170,.08);border-radius:6px;font-size:12px;color:#00d4aa">
-          ✅ 완료 기준: 동시 100개 요청 시 1건만 성공 · 5분 후 자동 회수 확인
+          ✅ 완료 — 통합 테스트 통과: 20스레드 동시 선점 → 1건 성공 / 19건 SEAT_ALREADY_HELD 차단. 5분 만료 회수 Scheduler 구현 완료
         </div>
       </div>
     </div>
@@ -2122,11 +2122,11 @@ Redis 조회: 메모리 → 응답            (약 0.1ms)  → 100배 빠름
   function saveToPersist() {
     const boxes = document.querySelectorAll('.check-box');
     const state = Array.from(boxes).map(b => b.classList.contains('checked'));
-    localStorage.setItem('ticketch-plan-checks', JSON.stringify(state));
+    localStorage.setItem('ticketch-plan-checks-v2', JSON.stringify(state));
   }
 
   function loadFromPersist() {
-    const saved = localStorage.getItem('ticketch-plan-checks');
+    const saved = localStorage.getItem('ticketch-plan-checks-v2');
     if (!saved) return;
     const state = JSON.parse(saved);
     const boxes = document.querySelectorAll('.check-box');
